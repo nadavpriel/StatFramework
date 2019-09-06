@@ -28,6 +28,7 @@ class LikelihoodAnalyser:
         """
         The function is fitting the data with a sine template using iminuit.
         The fitting is done after applying a bandpass filter.
+        :param noise_rms: std of the white gaussian noise
         :param plot: plot the data and its fft
         :param bandwidth: bandwidth for butter filter [Hz]
         :param fsamp: sampling rate [1/sec]
@@ -43,7 +44,7 @@ class LikelihoodAnalyser:
         # apply bandpass filter to data and store data in the correct place for the minimization
         self.data_x = np.arange(0, len(x)) / fsamp
         if drive_freq != 0:
-            print('Bandpass filter on. Bandwidth: ', bandwidth, 'Hz')
+            print('Bandpass filter ON. Bandwidth: ', bandwidth, 'Hz')
             b, a = signal.butter(3, [2. * (drive_freq - bandwidth / 2.) / self.fsamp,
                                      2. * (drive_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
             self.data_y = signal.filtfilt(b, a, x)
