@@ -1071,11 +1071,18 @@ typedef npy_cdouble __pyx_t_5numpy_complex_t;
  */
 struct __pyx_obj_12LeastSquares_LeastSquares {
   PyObject_HEAD
+  struct __pyx_vtabstruct_12LeastSquares_LeastSquares *__pyx_vtab;
   PyArrayObject *data_x;
   PyArrayObject *data_y;
   int ndata;
 };
 
+
+
+struct __pyx_vtabstruct_12LeastSquares_LeastSquares {
+  float (*compute)(struct __pyx_obj_12LeastSquares_LeastSquares *, double, double, double);
+};
+static struct __pyx_vtabstruct_12LeastSquares_LeastSquares *__pyx_vtabptr_12LeastSquares_LeastSquares;
 
 /* --- Runtime support code (head) --- */
 /* Refnanny.proto */
@@ -1188,14 +1195,6 @@ static PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j);
 static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i,
                                                      int is_list, int wraparound, int boundscheck);
 
-/* PyErrExceptionMatches.proto */
-#if CYTHON_FAST_THREAD_STATE
-#define __Pyx_PyErr_ExceptionMatches(err) __Pyx_PyErr_ExceptionMatchesInState(__pyx_tstate, err)
-static CYTHON_INLINE int __Pyx_PyErr_ExceptionMatchesInState(PyThreadState* tstate, PyObject* err);
-#else
-#define __Pyx_PyErr_ExceptionMatches(err)  PyErr_ExceptionMatches(err)
-#endif
-
 /* PyThreadStateGet.proto */
 #if CYTHON_FAST_THREAD_STATE
 #define __Pyx_PyThreadState_declare  PyThreadState *__pyx_tstate;
@@ -1230,6 +1229,19 @@ static CYTHON_INLINE void __Pyx_ErrFetchInState(PyThreadState *tstate, PyObject 
 #define __Pyx_ErrFetchInState(tstate, type, value, tb)  PyErr_Fetch(type, value, tb)
 #define __Pyx_ErrRestore(type, value, tb)  PyErr_Restore(type, value, tb)
 #define __Pyx_ErrFetch(type, value, tb)  PyErr_Fetch(type, value, tb)
+#endif
+
+/* WriteUnraisableException.proto */
+static void __Pyx_WriteUnraisable(const char *name, int clineno,
+                                  int lineno, const char *filename,
+                                  int full_traceback, int nogil);
+
+/* PyErrExceptionMatches.proto */
+#if CYTHON_FAST_THREAD_STATE
+#define __Pyx_PyErr_ExceptionMatches(err) __Pyx_PyErr_ExceptionMatchesInState(__pyx_tstate, err)
+static CYTHON_INLINE int __Pyx_PyErr_ExceptionMatchesInState(PyThreadState* tstate, PyObject* err);
+#else
+#define __Pyx_PyErr_ExceptionMatches(err)  PyErr_ExceptionMatches(err)
 #endif
 
 /* GetAttr.proto */
@@ -1338,6 +1350,9 @@ static PyObject* __Pyx_PyObject_GenericGetAttr(PyObject* obj, PyObject* attr_nam
 #else
 #define __Pyx_PyObject_GenericGetAttr PyObject_GenericGetAttr
 #endif
+
+/* SetVTable.proto */
+static int __Pyx_SetVtable(PyObject *dict, void *vtable);
 
 /* SetupReduce.proto */
 static int __Pyx_setup_reduce(PyObject* type_obj);
@@ -1515,6 +1530,7 @@ static PyTypeObject *__Pyx_ImportType(const char *module_name, const char *class
 /* InitStrings.proto */
 static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 
+static float __pyx_f_12LeastSquares_12LeastSquares_compute(struct __pyx_obj_12LeastSquares_LeastSquares *__pyx_v_self, double __pyx_v_A, double __pyx_v_f, double __pyx_v_phi); /* proto*/
 
 /* Module declarations from 'cpython.buffer' */
 
@@ -1561,10 +1577,7 @@ static PyObject *__pyx_builtin_range;
 static PyObject *__pyx_builtin_ValueError;
 static PyObject *__pyx_builtin_RuntimeError;
 static PyObject *__pyx_builtin_ImportError;
-static const char __pyx_k_A[] = "A";
-static const char __pyx_k_f[] = "f";
 static const char __pyx_k_new[] = "__new__";
-static const char __pyx_k_phi[] = "phi";
 static const char __pyx_k_dict[] = "__dict__";
 static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_name[] = "__name__";
@@ -1584,6 +1597,7 @@ static const char __pyx_k_pyx_state[] = "__pyx_state";
 static const char __pyx_k_reduce_ex[] = "__reduce_ex__";
 static const char __pyx_k_ValueError[] = "ValueError";
 static const char __pyx_k_pyx_result[] = "__pyx_result";
+static const char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
 static const char __pyx_k_ImportError[] = "ImportError";
 static const char __pyx_k_PickleError[] = "PickleError";
 static const char __pyx_k_LeastSquares[] = "LeastSquares";
@@ -1606,7 +1620,6 @@ static const char __pyx_k_Non_native_byte_order_not_suppor[] = "Non-native byte 
 static const char __pyx_k_ndarray_is_not_Fortran_contiguou[] = "ndarray is not Fortran contiguous";
 static const char __pyx_k_numpy_core_umath_failed_to_impor[] = "numpy.core.umath failed to import";
 static const char __pyx_k_Format_string_allocated_too_shor_2[] = "Format string allocated too short.";
-static PyObject *__pyx_n_s_A;
 static PyObject *__pyx_kp_u_Format_string_allocated_too_shor;
 static PyObject *__pyx_kp_u_Format_string_allocated_too_shor_2;
 static PyObject *__pyx_n_s_ImportError;
@@ -1621,7 +1634,6 @@ static PyObject *__pyx_n_s_data_x;
 static PyObject *__pyx_n_s_data_y;
 static PyObject *__pyx_n_s_describe;
 static PyObject *__pyx_n_s_dict;
-static PyObject *__pyx_n_s_f;
 static PyObject *__pyx_n_s_getstate;
 static PyObject *__pyx_n_s_iminuit_util;
 static PyObject *__pyx_n_s_import;
@@ -1633,7 +1645,6 @@ static PyObject *__pyx_kp_u_ndarray_is_not_Fortran_contiguou;
 static PyObject *__pyx_n_s_new;
 static PyObject *__pyx_kp_u_numpy_core_multiarray_failed_to;
 static PyObject *__pyx_kp_u_numpy_core_umath_failed_to_impor;
-static PyObject *__pyx_n_s_phi;
 static PyObject *__pyx_n_s_pickle;
 static PyObject *__pyx_n_s_pyx_PickleError;
 static PyObject *__pyx_n_s_pyx_checksum;
@@ -1641,6 +1652,7 @@ static PyObject *__pyx_n_s_pyx_result;
 static PyObject *__pyx_n_s_pyx_state;
 static PyObject *__pyx_n_s_pyx_type;
 static PyObject *__pyx_n_s_pyx_unpickle_LeastSquares;
+static PyObject *__pyx_n_s_pyx_vtable;
 static PyObject *__pyx_n_s_range;
 static PyObject *__pyx_n_s_reduce;
 static PyObject *__pyx_n_s_reduce_cython;
@@ -1652,9 +1664,8 @@ static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_kp_u_unknown_dtype_code_in_numpy_pxd;
 static PyObject *__pyx_n_s_update;
 static int __pyx_pf_12LeastSquares_12LeastSquares___init__(struct __pyx_obj_12LeastSquares_LeastSquares *__pyx_v_self, PyObject *__pyx_v_data_x, PyObject *__pyx_v_data_y); /* proto */
-static PyObject *__pyx_pf_12LeastSquares_12LeastSquares_2compute(struct __pyx_obj_12LeastSquares_LeastSquares *__pyx_v_self, double __pyx_v_A, double __pyx_v_f, double __pyx_v_phi); /* proto */
-static PyObject *__pyx_pf_12LeastSquares_12LeastSquares_4__reduce_cython__(struct __pyx_obj_12LeastSquares_LeastSquares *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_12LeastSquares_12LeastSquares_6__setstate_cython__(struct __pyx_obj_12LeastSquares_LeastSquares *__pyx_v_self, PyObject *__pyx_v___pyx_state); /* proto */
+static PyObject *__pyx_pf_12LeastSquares_12LeastSquares_2__reduce_cython__(struct __pyx_obj_12LeastSquares_LeastSquares *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_12LeastSquares_12LeastSquares_4__setstate_cython__(struct __pyx_obj_12LeastSquares_LeastSquares *__pyx_v_self, PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_pf_12LeastSquares___pyx_unpickle_LeastSquares(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v___pyx_type, long __pyx_v___pyx_checksum, PyObject *__pyx_v___pyx_state); /* proto */
 static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
 static void __pyx_pf_5numpy_7ndarray_2__releasebuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info); /* proto */
@@ -1814,90 +1825,17 @@ static int __pyx_pf_12LeastSquares_12LeastSquares___init__(struct __pyx_obj_12Le
 /* "LeastSquares.pyx":18
  * 
  *     @cython.embedsignature(True)  # put function signature in pydoc so `describe` can extract it
- *     def compute(self,double A, double f, double phi):             # <<<<<<<<<<<<<<
- *         cdef double res = 0
+ *     cdef float compute(self,double A, double f, double phi):             # <<<<<<<<<<<<<<
+ *         cdef float res = 0
  *         cdef int i
  */
 
-/* Python wrapper */
-static PyObject *__pyx_pw_12LeastSquares_12LeastSquares_3compute(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_12LeastSquares_12LeastSquares_2compute[] = "LeastSquares.compute(self, double A, double f, double phi)";
-static PyObject *__pyx_pw_12LeastSquares_12LeastSquares_3compute(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  double __pyx_v_A;
-  double __pyx_v_f;
-  double __pyx_v_phi;
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("compute (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_A,&__pyx_n_s_f,&__pyx_n_s_phi,0};
-    PyObject* values[3] = {0,0,0};
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
-        CYTHON_FALLTHROUGH;
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        CYTHON_FALLTHROUGH;
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        CYTHON_FALLTHROUGH;
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_A)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        CYTHON_FALLTHROUGH;
-        case  1:
-        if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_f)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("compute", 1, 3, 3, 1); __PYX_ERR(0, 18, __pyx_L3_error)
-        }
-        CYTHON_FALLTHROUGH;
-        case  2:
-        if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_phi)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("compute", 1, 3, 3, 2); __PYX_ERR(0, 18, __pyx_L3_error)
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "compute") < 0)) __PYX_ERR(0, 18, __pyx_L3_error)
-      }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
-      goto __pyx_L5_argtuple_error;
-    } else {
-      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-      values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
-    }
-    __pyx_v_A = __pyx_PyFloat_AsDouble(values[0]); if (unlikely((__pyx_v_A == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 18, __pyx_L3_error)
-    __pyx_v_f = __pyx_PyFloat_AsDouble(values[1]); if (unlikely((__pyx_v_f == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 18, __pyx_L3_error)
-    __pyx_v_phi = __pyx_PyFloat_AsDouble(values[2]); if (unlikely((__pyx_v_phi == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 18, __pyx_L3_error)
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("compute", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 18, __pyx_L3_error)
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("LeastSquares.LeastSquares.compute", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_12LeastSquares_12LeastSquares_2compute(((struct __pyx_obj_12LeastSquares_LeastSquares *)__pyx_v_self), __pyx_v_A, __pyx_v_f, __pyx_v_phi);
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_12LeastSquares_12LeastSquares_2compute(struct __pyx_obj_12LeastSquares_LeastSquares *__pyx_v_self, double __pyx_v_A, double __pyx_v_f, double __pyx_v_phi) {
-  double __pyx_v_res;
+static float __pyx_f_12LeastSquares_12LeastSquares_compute(struct __pyx_obj_12LeastSquares_LeastSquares *__pyx_v_self, double __pyx_v_A, double __pyx_v_f, double __pyx_v_phi) {
+  float __pyx_v_res;
   int __pyx_v_i;
   double __pyx_v_val;
   PyObject *__pyx_v_x_val = NULL;
-  PyObject *__pyx_r = NULL;
+  float __pyx_r;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
   int __pyx_t_2;
@@ -1910,8 +1848,8 @@ static PyObject *__pyx_pf_12LeastSquares_12LeastSquares_2compute(struct __pyx_ob
 
   /* "LeastSquares.pyx":19
  *     @cython.embedsignature(True)  # put function signature in pydoc so `describe` can extract it
- *     def compute(self,double A, double f, double phi):
- *         cdef double res = 0             # <<<<<<<<<<<<<<
+ *     cdef float compute(self,double A, double f, double phi):
+ *         cdef float res = 0             # <<<<<<<<<<<<<<
  *         cdef int i
  *         cdef double val
  */
@@ -1987,18 +1925,14 @@ static PyObject *__pyx_pf_12LeastSquares_12LeastSquares_2compute(struct __pyx_ob
  *             res += pow(self.data_y[i] - val, 2)
  *         return res             # <<<<<<<<<<<<<<
  */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_5 = PyFloat_FromDouble(__pyx_v_res); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 26, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  __pyx_r = __pyx_t_5;
-  __pyx_t_5 = 0;
+  __pyx_r = __pyx_v_res;
   goto __pyx_L0;
 
   /* "LeastSquares.pyx":18
  * 
  *     @cython.embedsignature(True)  # put function signature in pydoc so `describe` can extract it
- *     def compute(self,double A, double f, double phi):             # <<<<<<<<<<<<<<
- *         cdef double res = 0
+ *     cdef float compute(self,double A, double f, double phi):             # <<<<<<<<<<<<<<
+ *         cdef float res = 0
  *         cdef int i
  */
 
@@ -2007,11 +1941,10 @@ static PyObject *__pyx_pf_12LeastSquares_12LeastSquares_2compute(struct __pyx_ob
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_AddTraceback("LeastSquares.LeastSquares.compute", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
+  __Pyx_WriteUnraisable("LeastSquares.LeastSquares.compute", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_x_val);
-  __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -2023,19 +1956,19 @@ static PyObject *__pyx_pf_12LeastSquares_12LeastSquares_2compute(struct __pyx_ob
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_12LeastSquares_12LeastSquares_5__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_12LeastSquares_12LeastSquares_5__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_12LeastSquares_12LeastSquares_3__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_12LeastSquares_12LeastSquares_3__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__reduce_cython__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_12LeastSquares_12LeastSquares_4__reduce_cython__(((struct __pyx_obj_12LeastSquares_LeastSquares *)__pyx_v_self));
+  __pyx_r = __pyx_pf_12LeastSquares_12LeastSquares_2__reduce_cython__(((struct __pyx_obj_12LeastSquares_LeastSquares *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_12LeastSquares_12LeastSquares_4__reduce_cython__(struct __pyx_obj_12LeastSquares_LeastSquares *__pyx_v_self) {
+static PyObject *__pyx_pf_12LeastSquares_12LeastSquares_2__reduce_cython__(struct __pyx_obj_12LeastSquares_LeastSquares *__pyx_v_self) {
   int __pyx_v_use_setstate;
   PyObject *__pyx_v_state = NULL;
   PyObject *__pyx_v__dict = NULL;
@@ -2274,19 +2207,19 @@ static PyObject *__pyx_pf_12LeastSquares_12LeastSquares_4__reduce_cython__(struc
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_12LeastSquares_12LeastSquares_7__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
-static PyObject *__pyx_pw_12LeastSquares_12LeastSquares_7__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
+static PyObject *__pyx_pw_12LeastSquares_12LeastSquares_5__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
+static PyObject *__pyx_pw_12LeastSquares_12LeastSquares_5__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__setstate_cython__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_12LeastSquares_12LeastSquares_6__setstate_cython__(((struct __pyx_obj_12LeastSquares_LeastSquares *)__pyx_v_self), ((PyObject *)__pyx_v___pyx_state));
+  __pyx_r = __pyx_pf_12LeastSquares_12LeastSquares_4__setstate_cython__(((struct __pyx_obj_12LeastSquares_LeastSquares *)__pyx_v_self), ((PyObject *)__pyx_v___pyx_state));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_12LeastSquares_12LeastSquares_6__setstate_cython__(struct __pyx_obj_12LeastSquares_LeastSquares *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
+static PyObject *__pyx_pf_12LeastSquares_12LeastSquares_4__setstate_cython__(struct __pyx_obj_12LeastSquares_LeastSquares *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -5284,6 +5217,7 @@ static CYTHON_INLINE int __pyx_f_5numpy_import_ufunc(void) {
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
+static struct __pyx_vtabstruct_12LeastSquares_LeastSquares __pyx_vtable_12LeastSquares_LeastSquares;
 
 static PyObject *__pyx_tp_new_12LeastSquares_LeastSquares(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
   struct __pyx_obj_12LeastSquares_LeastSquares *p;
@@ -5295,6 +5229,7 @@ static PyObject *__pyx_tp_new_12LeastSquares_LeastSquares(PyTypeObject *t, CYTHO
   }
   if (unlikely(!o)) return 0;
   p = ((struct __pyx_obj_12LeastSquares_LeastSquares *)o);
+  p->__pyx_vtab = __pyx_vtabptr_12LeastSquares_LeastSquares;
   p->data_x = ((PyArrayObject *)Py_None); Py_INCREF(Py_None);
   p->data_y = ((PyArrayObject *)Py_None); Py_INCREF(Py_None);
   return o;
@@ -5338,9 +5273,8 @@ static int __pyx_tp_clear_12LeastSquares_LeastSquares(PyObject *o) {
 }
 
 static PyMethodDef __pyx_methods_12LeastSquares_LeastSquares[] = {
-  {"compute", (PyCFunction)__pyx_pw_12LeastSquares_12LeastSquares_3compute, METH_VARARGS|METH_KEYWORDS, __pyx_doc_12LeastSquares_12LeastSquares_2compute},
-  {"__reduce_cython__", (PyCFunction)__pyx_pw_12LeastSquares_12LeastSquares_5__reduce_cython__, METH_NOARGS, 0},
-  {"__setstate_cython__", (PyCFunction)__pyx_pw_12LeastSquares_12LeastSquares_7__setstate_cython__, METH_O, 0},
+  {"__reduce_cython__", (PyCFunction)__pyx_pw_12LeastSquares_12LeastSquares_3__reduce_cython__, METH_NOARGS, 0},
+  {"__setstate_cython__", (PyCFunction)__pyx_pw_12LeastSquares_12LeastSquares_5__setstate_cython__, METH_O, 0},
   {0, 0, 0, 0}
 };
 
@@ -5439,7 +5373,6 @@ static struct PyModuleDef __pyx_moduledef = {
 #endif
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
-  {&__pyx_n_s_A, __pyx_k_A, sizeof(__pyx_k_A), 0, 0, 1, 1},
   {&__pyx_kp_u_Format_string_allocated_too_shor, __pyx_k_Format_string_allocated_too_shor, sizeof(__pyx_k_Format_string_allocated_too_shor), 0, 1, 0, 0},
   {&__pyx_kp_u_Format_string_allocated_too_shor_2, __pyx_k_Format_string_allocated_too_shor_2, sizeof(__pyx_k_Format_string_allocated_too_shor_2), 0, 1, 0, 0},
   {&__pyx_n_s_ImportError, __pyx_k_ImportError, sizeof(__pyx_k_ImportError), 0, 0, 1, 1},
@@ -5454,7 +5387,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_data_y, __pyx_k_data_y, sizeof(__pyx_k_data_y), 0, 0, 1, 1},
   {&__pyx_n_s_describe, __pyx_k_describe, sizeof(__pyx_k_describe), 0, 0, 1, 1},
   {&__pyx_n_s_dict, __pyx_k_dict, sizeof(__pyx_k_dict), 0, 0, 1, 1},
-  {&__pyx_n_s_f, __pyx_k_f, sizeof(__pyx_k_f), 0, 0, 1, 1},
   {&__pyx_n_s_getstate, __pyx_k_getstate, sizeof(__pyx_k_getstate), 0, 0, 1, 1},
   {&__pyx_n_s_iminuit_util, __pyx_k_iminuit_util, sizeof(__pyx_k_iminuit_util), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
@@ -5466,7 +5398,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_new, __pyx_k_new, sizeof(__pyx_k_new), 0, 0, 1, 1},
   {&__pyx_kp_u_numpy_core_multiarray_failed_to, __pyx_k_numpy_core_multiarray_failed_to, sizeof(__pyx_k_numpy_core_multiarray_failed_to), 0, 1, 0, 0},
   {&__pyx_kp_u_numpy_core_umath_failed_to_impor, __pyx_k_numpy_core_umath_failed_to_impor, sizeof(__pyx_k_numpy_core_umath_failed_to_impor), 0, 1, 0, 0},
-  {&__pyx_n_s_phi, __pyx_k_phi, sizeof(__pyx_k_phi), 0, 0, 1, 1},
   {&__pyx_n_s_pickle, __pyx_k_pickle, sizeof(__pyx_k_pickle), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_PickleError, __pyx_k_pyx_PickleError, sizeof(__pyx_k_pyx_PickleError), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_checksum, __pyx_k_pyx_checksum, sizeof(__pyx_k_pyx_checksum), 0, 0, 1, 1},
@@ -5474,6 +5405,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_pyx_state, __pyx_k_pyx_state, sizeof(__pyx_k_pyx_state), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_type, __pyx_k_pyx_type, sizeof(__pyx_k_pyx_type), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_unpickle_LeastSquares, __pyx_k_pyx_unpickle_LeastSquares, sizeof(__pyx_k_pyx_unpickle_LeastSquares), 0, 0, 1, 1},
+  {&__pyx_n_s_pyx_vtable, __pyx_k_pyx_vtable, sizeof(__pyx_k_pyx_vtable), 0, 0, 1, 1},
   {&__pyx_n_s_range, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
   {&__pyx_n_s_reduce, __pyx_k_reduce, sizeof(__pyx_k_reduce), 0, 0, 1, 1},
   {&__pyx_n_s_reduce_cython, __pyx_k_reduce_cython, sizeof(__pyx_k_reduce_cython), 0, 0, 1, 1},
@@ -5657,11 +5589,14 @@ static int __Pyx_modinit_type_init_code(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_modinit_type_init_code", 0);
   /*--- Type init code ---*/
+  __pyx_vtabptr_12LeastSquares_LeastSquares = &__pyx_vtable_12LeastSquares_LeastSquares;
+  __pyx_vtable_12LeastSquares_LeastSquares.compute = (float (*)(struct __pyx_obj_12LeastSquares_LeastSquares *, double, double, double))__pyx_f_12LeastSquares_12LeastSquares_compute;
   if (PyType_Ready(&__pyx_type_12LeastSquares_LeastSquares) < 0) __PYX_ERR(0, 6, __pyx_L1_error)
   __pyx_type_12LeastSquares_LeastSquares.tp_print = 0;
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_12LeastSquares_LeastSquares.tp_dictoffset && __pyx_type_12LeastSquares_LeastSquares.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_12LeastSquares_LeastSquares.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
+  if (__Pyx_SetVtable(__pyx_type_12LeastSquares_LeastSquares.tp_dict, __pyx_vtabptr_12LeastSquares_LeastSquares) < 0) __PYX_ERR(0, 6, __pyx_L1_error)
   if (PyObject_SetAttrString(__pyx_m, "LeastSquares", (PyObject *)&__pyx_type_12LeastSquares_LeastSquares) < 0) __PYX_ERR(0, 6, __pyx_L1_error)
   if (__Pyx_setup_reduce((PyObject*)&__pyx_type_12LeastSquares_LeastSquares) < 0) __PYX_ERR(0, 6, __pyx_L1_error)
   __pyx_ptype_12LeastSquares_LeastSquares = &__pyx_type_12LeastSquares_LeastSquares;
@@ -6254,6 +6189,72 @@ static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i, 
     return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
 }
 
+/* PyErrFetchRestore */
+#if CYTHON_FAST_THREAD_STATE
+static CYTHON_INLINE void __Pyx_ErrRestoreInState(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb) {
+    PyObject *tmp_type, *tmp_value, *tmp_tb;
+    tmp_type = tstate->curexc_type;
+    tmp_value = tstate->curexc_value;
+    tmp_tb = tstate->curexc_traceback;
+    tstate->curexc_type = type;
+    tstate->curexc_value = value;
+    tstate->curexc_traceback = tb;
+    Py_XDECREF(tmp_type);
+    Py_XDECREF(tmp_value);
+    Py_XDECREF(tmp_tb);
+}
+static CYTHON_INLINE void __Pyx_ErrFetchInState(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
+    *type = tstate->curexc_type;
+    *value = tstate->curexc_value;
+    *tb = tstate->curexc_traceback;
+    tstate->curexc_type = 0;
+    tstate->curexc_value = 0;
+    tstate->curexc_traceback = 0;
+}
+#endif
+
+/* WriteUnraisableException */
+static void __Pyx_WriteUnraisable(const char *name, CYTHON_UNUSED int clineno,
+                                  CYTHON_UNUSED int lineno, CYTHON_UNUSED const char *filename,
+                                  int full_traceback, CYTHON_UNUSED int nogil) {
+    PyObject *old_exc, *old_val, *old_tb;
+    PyObject *ctx;
+    __Pyx_PyThreadState_declare
+#ifdef WITH_THREAD
+    PyGILState_STATE state;
+    if (nogil)
+        state = PyGILState_Ensure();
+#ifdef _MSC_VER
+    else state = (PyGILState_STATE)-1;
+#endif
+#endif
+    __Pyx_PyThreadState_assign
+    __Pyx_ErrFetch(&old_exc, &old_val, &old_tb);
+    if (full_traceback) {
+        Py_XINCREF(old_exc);
+        Py_XINCREF(old_val);
+        Py_XINCREF(old_tb);
+        __Pyx_ErrRestore(old_exc, old_val, old_tb);
+        PyErr_PrintEx(1);
+    }
+    #if PY_MAJOR_VERSION < 3
+    ctx = PyString_FromString(name);
+    #else
+    ctx = PyUnicode_FromString(name);
+    #endif
+    __Pyx_ErrRestore(old_exc, old_val, old_tb);
+    if (!ctx) {
+        PyErr_WriteUnraisable(Py_None);
+    } else {
+        PyErr_WriteUnraisable(ctx);
+        Py_DECREF(ctx);
+    }
+#ifdef WITH_THREAD
+    if (nogil)
+        PyGILState_Release(state);
+#endif
+}
+
 /* PyErrExceptionMatches */
 #if CYTHON_FAST_THREAD_STATE
 static int __Pyx_PyErr_ExceptionMatchesTuple(PyObject *exc_type, PyObject *tuple) {
@@ -6276,30 +6277,6 @@ static CYTHON_INLINE int __Pyx_PyErr_ExceptionMatchesInState(PyThreadState* tsta
     if (unlikely(PyTuple_Check(err)))
         return __Pyx_PyErr_ExceptionMatchesTuple(exc_type, err);
     return __Pyx_PyErr_GivenExceptionMatches(exc_type, err);
-}
-#endif
-
-/* PyErrFetchRestore */
-#if CYTHON_FAST_THREAD_STATE
-static CYTHON_INLINE void __Pyx_ErrRestoreInState(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb) {
-    PyObject *tmp_type, *tmp_value, *tmp_tb;
-    tmp_type = tstate->curexc_type;
-    tmp_value = tstate->curexc_value;
-    tmp_tb = tstate->curexc_traceback;
-    tstate->curexc_type = type;
-    tstate->curexc_value = value;
-    tstate->curexc_traceback = tb;
-    Py_XDECREF(tmp_type);
-    Py_XDECREF(tmp_value);
-    Py_XDECREF(tmp_tb);
-}
-static CYTHON_INLINE void __Pyx_ErrFetchInState(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
-    *type = tstate->curexc_type;
-    *value = tstate->curexc_value;
-    *tb = tstate->curexc_traceback;
-    tstate->curexc_type = 0;
-    tstate->curexc_value = 0;
-    tstate->curexc_traceback = 0;
 }
 #endif
 
@@ -7032,6 +7009,24 @@ static PyObject* __Pyx_PyObject_GenericGetAttr(PyObject* obj, PyObject* attr_nam
     return __Pyx_PyObject_GenericGetAttrNoDict(obj, attr_name);
 }
 #endif
+
+/* SetVTable */
+      static int __Pyx_SetVtable(PyObject *dict, void *vtable) {
+#if PY_VERSION_HEX >= 0x02070000
+    PyObject *ob = PyCapsule_New(vtable, 0, 0);
+#else
+    PyObject *ob = PyCObject_FromVoidPtr(vtable, 0);
+#endif
+    if (!ob)
+        goto bad;
+    if (PyDict_SetItem(dict, __pyx_n_s_pyx_vtable, ob) < 0)
+        goto bad;
+    Py_DECREF(ob);
+    return 0;
+bad:
+    Py_XDECREF(ob);
+    return -1;
+}
 
 /* SetupReduce */
       static int __Pyx_setup_reduce_is_named(PyObject* meth, PyObject* name) {

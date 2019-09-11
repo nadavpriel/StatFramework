@@ -15,8 +15,8 @@ cdef class LeastSquares:
         self.data_y = data_y
 
     @cython.embedsignature(True)  # put function signature in pydoc so `describe` can extract it
-    def compute(self,double A, double f, double phi):
-        cdef double res = 0
+    cpdef float compute(self,double A, double f, double phi):
+        cdef float res = 0
         cdef int i
         cdef double val
         for i in range(self.ndata):
