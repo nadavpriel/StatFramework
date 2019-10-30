@@ -38,7 +38,7 @@ class LikelihoodAnalyser:
         func_t = A * np.sin(2 * np.pi * f * self.data_x + phi)  # function to minimize
         res = sum(np.power(np.abs(self.data_y - func_t), 2))
 
-        func_t2 = A2 * np.sin(2 * np.pi * f2 * self.data_x + phi + delta_phi)  # function to minimize
+        func_t2 = A* A2 * np.sin(2 * np.pi * f2 * self.data_x + phi + delta_phi)  # function to minimize
         res2 = sum(np.power(np.abs(self.data_y2 - func_t2), 2))
         return (res+res2) / self.noise_sigma ** 2
 

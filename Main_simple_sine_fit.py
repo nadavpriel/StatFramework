@@ -45,5 +45,5 @@ fit_kwargs = {'A': 5, 'f': 100, 'phi': 1, 'A2': 1, 'f2': 100, 'delta_phi': 1,
               'print_level': 0, 'fix_f': True, 'fix_phi': False, 'fix_f2': True, 'fix_delta_phi': True, 'fix_A2': False}
 
 empirical_scale = 0.18642853643227691
-m1 = lc_i.find_mle_2sin(sig_x, sig_x2, drive_freq=freq, noise_rms=noise_rms * empirical_scale, bandwidth=10, plot=True,
+m1 = lc_i.find_mle_2sin(sig_x, sig_x2, drive_freq=freq, noise_rms=noise_rms * empirical_scale, bandwidth=100, plot=True,
                         suppress_print=False, **fit_kwargs)
