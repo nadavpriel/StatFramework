@@ -26,6 +26,20 @@ class LikelihoodAnalyser:
         res = sum(np.power(np.abs(self.data_y - func_t), 2))
         return res / self.noise_sigma ** 2
 
+    def least_squares_bimodal_sine(self, A, A2, f, phi, phi2):
+        """
+        least squares for minimization - sine function
+        :param phi2: phase second sine
+        :param A2: amplitude of second sine
+        :param A: Amplitude
+        :param f: frequency
+        :param phi: phase
+        :return: cost function - sum of squares
+        """
+        func_t = A * np.sin(2 * np.pi * f * self.data_x + phi) + A2 * np.sin(2 * np.pi * f * self.data_x + phi2)  # function to minimize
+        res = sum(np.power(np.abs(self.data_y - func_t), 2))
+        return res / self.noise_sigma ** 2
+
     def least_squares_2sines(self, A, A2, f, f2, phi, delta_phi):
         """
         least squares for minimization - sine function for two datasets
@@ -57,11 +71,12 @@ class LikelihoodAnalyser:
         res += len(self.data_x) * np.log(np.pi * sigma ** 2)
         return res / sigma ** 2
 
-    def find_mle_sin(self, x, drive_freq=0, fsamp=5000, bandwidth=50, noise_rms=0, plot=False, suppress_print=True,
+    def find_mle_sin(self, x, drive_freq=0, fsamp=5000, bandwidth=50, noise_rms=0, plot=False, suppress_print=True, bimodal=False
                      **kwargs):
         """
         The function is fitting the data with a sine template using iminuit.
         The fitting is done after applying a bandpass filter.
+        :param bimodal: bimodal sine function
         :param suppress_print: suppress all printing
         :param noise_rms: std of the white gaussian noise
         :param plot: plot the data and its fft
@@ -93,10 +108,13 @@ class LikelihoodAnalyser:
             print('bandpass time: ', end - start)
 
         # we create an instance of Minuit and pass the function to minimize
-        if 'sigma' in kwargs.keys():
-            mimuit_minimizer = Minuit(self.least_squares_sine2, **kwargs)
+        if bimodal:
+            mimuit_minimizer = Minuit(self.least_squares_bimodal_sine, **kwargs)
         else:
-            mimuit_minimizer = Minuit(self.least_squares_sine, **kwargs)
+            if 'sigma' in kwargs.keys():
+                mimuit_minimizer = Minuit(self.least_squares_sine2, **kwargs)
+            else:
+                mimuit_minimizer = Minuit(self.least_squares_sine, **kwargs)
 
         start = time.time()
         mimuit_minimizer.migrad(ncall=50000)
