@@ -13,6 +13,7 @@ class LikelihoodAnalyser:
         self.data_y2 = 0  # second y-data to fit
         self.fsamp = 0  # sampling rate
         self.noise_sigma = 1  # gaussian white noise std
+        self.noise_sigma2 = 1  # gaussian white noise std
 
     def least_squares_sine(self, A, f, phi):
         """
@@ -36,7 +37,8 @@ class LikelihoodAnalyser:
         :param phi: phase
         :return: cost function - sum of squares
         """
-        func_t = A * np.sin(2 * np.pi * f * self.data_x + phi) + A2 * np.sin(2 * np.pi * f * self.data_x + phi2)  # function to minimize
+        func_t = A * np.sin(2 * np.pi * f * self.data_x + phi) + A2 * np.sin(
+            2 * np.pi * f * self.data_x + phi2)  # function to minimize
         res = sum(np.power(np.abs(self.data_y - func_t), 2))
         return res / self.noise_sigma ** 2
 
@@ -50,11 +52,11 @@ class LikelihoodAnalyser:
         :return: cost function - sum of squares
         """
         func_t = A * np.sin(2 * np.pi * f * self.data_x + phi)  # function to minimize
-        res = sum(np.power(np.abs(self.data_y - func_t), 2))
+        res = sum(np.power(np.abs(self.data_y - func_t), 2)) / self.noise_sigma ** 2
 
-        func_t2 = A* A2 * np.sin(2 * np.pi * f2 * self.data_x + phi + delta_phi)  # function to minimize
-        res2 = sum(np.power(np.abs(self.data_y2 - func_t2), 2))
-        return (res+res2) / self.noise_sigma ** 2
+        func_t2 = A * A2 * np.sin(2 * np.pi * f2 * self.data_x + phi + delta_phi)  # function to minimize
+        res2 = sum(np.power(np.abs(self.data_y2 - func_t2), 2)) / self.noise_sigma2 ** 2
+        return res + res2
 
     def least_squares_sine2(self, A, f, phi, sigma):
         """
@@ -71,8 +73,8 @@ class LikelihoodAnalyser:
         res += len(self.data_x) * np.log(np.pi * sigma ** 2)
         return res / sigma ** 2
 
-    def find_mle_sin(self, x, drive_freq=0, fsamp=5000, bandwidth=50, noise_rms=0, plot=False, suppress_print=True, bimodal=False
-                     **kwargs):
+    def find_mle_sin(self, x, drive_freq=0, fsamp=5000, bandwidth=50, noise_rms=0, plot=False, suppress_print=True,
+                     bimodal=False, **kwargs):
         """
         The function is fitting the data with a sine template using iminuit.
         The fitting is done after applying a bandpass filter.
@@ -137,13 +139,13 @@ class LikelihoodAnalyser:
 
         return mimuit_minimizer
 
-    def find_mle_2sin(self, x, x2, drive_freq=0, fsamp=5000, bandwidth=50, noise_rms=0, plot=False, suppress_print=True,
-                     **kwargs):
+    def find_mle_2sin(self, x, x2, drive_freq=0, fsamp=5000, bandwidth=50, noise_rms=0, noise_rms2=0, plot=False, suppress_print=True,
+                      **kwargs):
         """
         The function is fitting the data with a sine template using iminuit.
         The fitting is done after applying a bandpass filter.
         :param suppress_print: suppress all printing
-        :param noise_rms: std of the white gaussian noise
+        :param noise_rms, noise_rms2: std of the white gaussian noise
         :param plot: plot the data and its fft
         :param bandwidth: bandwidth for butter filter [Hz]
         :param fsamp: sampling rate [1/sec]
@@ -156,6 +158,7 @@ class LikelihoodAnalyser:
         self.fsamp = fsamp
         if noise_rms != 0:
             self.noise_sigma = noise_rms
+            self.noise_sigma2 = noise_rms2
 
         # apply a bandpass filter to data and store data in the correct place for the minimization
         self.data_x = np.arange(0, len(x)) / fsamp
@@ -196,6 +199,6 @@ class LikelihoodAnalyser:
             mimuit_minimizer.draw_profile('A2', subtract_min=True)
             plt.show()
         if not suppress_print:
-            print('reduced chi2: ', mimuit_minimizer.fval / (2*len(self.data_y) - 4))
+            print('reduced chi2: ', mimuit_minimizer.fval / (2 * len(self.data_y) - 4))
 
         return mimuit_minimizer
