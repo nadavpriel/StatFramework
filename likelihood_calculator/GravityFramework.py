@@ -23,8 +23,10 @@ class GravityFramework:
         self.Error_array = None  # errors of the amplitudes
         self.scale_X2 = 1  # scale X2 signal to force in Newtons
         self.scale_X3 = 1  # scale X3 signal to force in Newtons
+        self.fsamp = 5000
+        self.lc_i = likelihood_analyser.LikelihoodAnalyser()
 
-    def plot_dataset(self, bdf_i,  res=50000):
+    def plot_dataset(self, bdf_i, res=50000):
         """
         Plot the x2 and x3 data and their envelopes
         :param res: resolution of the fft
@@ -32,9 +34,8 @@ class GravityFramework:
         """
 
         bdf = self.BDFs[bdf_i]
-        fsamp = 5000
-        x2_psd, freqs = matplotlib.mlab.psd(bdf.x2, Fs=fsamp, NFFT=res, detrend='default')
-        x3_psd, _ = matplotlib.mlab.psd(bdf.x3, Fs=fsamp, NFFT=res, detrend='default')
+        x2_psd, freqs = matplotlib.mlab.psd(bdf.x2 * 50000, Fs=self.fsamp, NFFT=res, detrend='default')
+        x3_psd, _ = matplotlib.mlab.psd(bdf.x3 / 6, Fs=self.fsamp, NFFT=res, detrend='default')
 
         _, ax = plt.subplots(1, 2, figsize=(9.5, 4))
         ax[0].loglog(freqs, x2_psd)
@@ -42,3 +43,34 @@ class GravityFramework:
 
         plt.show()
 
+    def get_amplitude(self, bdf_i, harmonic_num, noise_rms, noise_rms2, bandwidth=1, **fit_kwargs):
+        """
+        Fit and extract the amplitude of one harmonic from one particular file
+        :param harmonic_num: which harmonic to fit
+        :param bandwidth: bandpass bandwidth
+        :param noise_rms, noise_rms2: noise std of X2 and X3
+        :param bdf_i: index of the bdf dataset to be used
+        :return: amplitude, error
+        """
+        bb = self.BDFs[bdf_i]
+        frequency = self.fundamental_freq * harmonic_num
+
+        xx2 = bb.response_at_freq2('x', frequency, bandwidth=bandwidth) * 50000
+        xx2 = xx2[5000:-5000]  # cut out the first and last second
+
+        xx3 = bb.response_at_freq3('x', frequency, bandwidth=bandwidth) / 6
+        xx3 = xx3[5000:-5000]  # cut out the first and last second
+
+        m1_tmp = self.lc_i.find_mle_2sin(xx2, xx3, fsamp=self.fsamp,
+                                         noise_rms=noise_rms,
+                                         noise_rms2=noise_rms2,
+                                         plot=False, suppress_print=True, **fit_kwargs)
+
+        print('***************************************************')
+        print('bdf_i: ', bdf_i, ', frequency: ', frequency)
+        print('X2:: ', '{:.2e}'.format(np.abs(m1_tmp.values[0])))
+        print('reduced chi2: ', m1_tmp.fval / (len(self.data_y) - 3))
+
+        return m1_tmp.values[0], m1_tmp.errors[0]
+
+    # def build_noise_array(self, sideband_freq):
