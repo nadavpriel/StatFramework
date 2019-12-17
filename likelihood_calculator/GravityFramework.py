@@ -33,10 +33,10 @@ class GravityFramework:
 
         bdf = self.BDFs[bdf_i]
         fsamp = 5000
-        x2_psd, freqs = matplotlib.mlab.psd(bdf.X2, Fs=fsamp, NFFT=res, detrend='default')
-        x3_psd, _ = matplotlib.mlab.psd(bdf.X3, Fs=fsamp, NFFT=res, detrend='default')
+        x2_psd, freqs = matplotlib.mlab.psd(bdf.x2, Fs=fsamp, NFFT=res, detrend='default')
+        x3_psd, _ = matplotlib.mlab.psd(bdf.x3, Fs=fsamp, NFFT=res, detrend='default')
 
-        _, ax = plt.subplots(1,2,figsize=(9.5,4))
+        _, ax = plt.subplots(1, 2, figsize=(9.5, 4))
         ax[0].loglog(freqs, x2_psd)
         ax[1].loglog(freqs, x3_psd)
 
