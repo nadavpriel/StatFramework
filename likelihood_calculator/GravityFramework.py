@@ -83,7 +83,7 @@ class GravityFramework:
             self.noise_list_x2.append(np.std(xx2[5000:-5000]))
 
             xx3 = bb.response_at_freq3('x', sideband_freq, bandwidth=bandwidth) / 6
-            self.noise_list_x2.append(np.std(xx3[5000:-5000]))
+            self.noise_list_x3.append(np.std(xx3[5000:-5000]))
 
         self.noise_rms_x2 = np.mean(self.noise_list_x2)
         self.noise_rms_x3 = np.mean(self.noise_list_x3)
