@@ -69,7 +69,7 @@ class GravityFramework:
         print('***************************************************')
         print('bdf_i: ', bdf_i, ', frequency: ', frequency)
         print('X2:: ', '{:.2e}'.format(np.abs(m1_tmp.values[0])))
-        print('reduced chi2: ', m1_tmp.fval / (len(self.data_y) - 3))
+        print('reduced chi2: ', m1_tmp.fval / (len(xx2) - 3))
 
         return m1_tmp.values[0], m1_tmp.errors[0]
 
