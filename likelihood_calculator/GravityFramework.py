@@ -68,9 +68,24 @@ class GravityFramework:
 
         print('***************************************************')
         print('bdf_i: ', bdf_i, ', frequency: ', frequency)
-        print('X2:: ', '{:.2e}'.format(np.abs(m1_tmp.values[0])))
+        print('X2-amplitude: ', '{:.2e}'.format(np.abs(m1_tmp.values[0])))
         print('reduced chi2: ', m1_tmp.fval / (len(xx2) - 3))
 
         return m1_tmp.values[0], m1_tmp.errors[0]
 
-    # def build_noise_array(self, sideband_freq):
+    def build_noise_array(self, sideband_freq, bandwidth=1):
+
+        self.noise_list_x2 = []
+        self.noise_list_x3 = []
+
+        for bb in self.BDFs:
+            xx2 = bb.response_at_freq2('x', sideband_freq, bandwidth=bandwidth) * 50000
+            self.noise_list_x2.append(np.std(xx2[5000:-5000]))
+
+            xx3 = bb.response_at_freq3('x', sideband_freq, bandwidth=bandwidth) / 6
+            self.noise_list_x2.append(np.std(xx3[5000:-5000]))
+
+        self.noise_rms_x2 = np.mean(self.noise_list_x2)
+        self.noise_rms_x3 = np.mean(self.noise_list_x3)
+        print('x2 noise rms: ', self.noise_rms_x2)
+        print('x3 noise rms: ', self.noise_rms_x3)
