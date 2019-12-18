@@ -71,10 +71,9 @@ class GravityFramework:
         print('X2-amplitude: ', '{:.2e}'.format(np.abs(m1_tmp.values[0])))
         print('reduced chi2: ', m1_tmp.fval / (len(xx2) - 3))
 
-        return m1_tmp.values[0], m1_tmp.errors[0]
+        return m1_tmp.values[0], m1_tmp.errors[0], m1_tmp
 
     def build_noise_array(self, sideband_freq, bandwidth=1):
-
         self.noise_list_x2 = []
         self.noise_list_x3 = []
 
@@ -89,3 +88,37 @@ class GravityFramework:
         self.noise_rms_x3 = np.mean(self.noise_list_x3)
         print('x2 noise rms: ', self.noise_rms_x2)
         print('x3 noise rms: ', self.noise_rms_x3)
+
+    def build_x_response(self, bdf_list, drive_freq, charges):
+        """
+        Calculates the X response by fitting X2 and X3 simultaneously
+        :param bdf_list: list of force calibration BeadDataFiles
+        :param drive_freq: the drive frequency on the electrodes
+        :param charges: charge state on the sphere
+        :return: m1_tmp, list of the minimizer
+        """
+        harmonic = 1
+        fit_kwargs = {'A': 10, 'f': drive_freq, 'phi': 0, 'A2': 2, 'f2': drive_freq,
+                      'delta_phi': 0,
+                      'error_A': 1, 'error_f': 1, 'error_phi': 0.1, 'errordef': 1,
+                      'error_A2': 1, 'error_f2': 1, 'error_delta_phi': 0.1,
+                      'limit_phi': [0, 2 * np.pi], 'limit_delta_phi': [-0.1, 0.1],
+                      'limit_A': [-1000, 1000], 'limit_A2': [0, 1000],
+                      'print_level': 0, 'fix_f': True, 'fix_phi': False, 'fix_f2': True, 'fix_delta_phi': True,
+                      'fix_A2': False}
+        tmp_freq = self.fundamental_freq
+        self.fundamental_freq = drive_freq
+        m1_tmp = [self.get_amplitude(bdf_i=i, harmonic_num=harmonic, noise_rms=1, noise_rms2=1, **fit_kwargs)[2] for i
+                  in range(len(self.BDFs))]
+        self.fundamental_freq = tmp_freq
+
+        force = charges*1.6e-19*20/8e-3*0.61  # in Newtons
+        A_mean = np.mean([m1.values[0] for m1 in m1_tmp])
+        A2_mean = np.mean([m1.values[1] for m1 in m1_tmp])
+        self.scale_X2 = A_mean/force
+        self.scale_X3 = A_mean*A2_mean/force
+
+        print('X2 to X3 ratio:', A2_mean)
+        print('X2 response (amplitude):', A_mean)
+
+        return m1_tmp
