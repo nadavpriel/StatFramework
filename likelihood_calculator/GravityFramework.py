@@ -18,13 +18,15 @@ class GravityFramework:
         self.avg_list_x2 = []  # x2 average response - force calibration files
         self.avg_list_x3 = []  # x3 average response - force calibration files
         self.fundamental_freq = 13  # fundamental frequency
-        self.Harmonics_list = None  #
+        self.Harmonics_list = None  # list of frequencies
         self.Harmonics_array = None  # amplitudes at the given harmonics
         self.Error_array = None  # errors of the amplitudes
         self.scale_X2 = 1  # scale X2 signal to force in Newtons
         self.scale_X3 = 1  # scale X3 signal to force in Newtons
+        self.A2_mean = 1  # X3/X2 mean
         self.fsamp = 5000
         self.lc_i = likelihood_analyser.LikelihoodAnalyser()
+        self.m1_list = None  # last m1 list (last fitting)
 
     def plot_dataset(self, bdf_i, res=50000):
         """
@@ -105,19 +107,48 @@ class GravityFramework:
                       'print_level': 0, 'fix_f': True, 'fix_phi': False, 'fix_f2': True, 'fix_delta_phi': True,
                       'fix_A2': False}
 
-        tmp_freq = self.fundamental_freq
-        self.fundamental_freq = drive_freq
         m1_tmp = [self.get_amplitude(bdf=bdf_, noise_rms=1, noise_rms2=1, **fit_kwargs)[2] for
                   bdf_ in bdf_list]
-        self.fundamental_freq = tmp_freq
 
-        force = charges*1.6e-19*20/8e-3*0.61  # in Newtons
+        force = charges * 1.6e-19 * 20 / 8e-3 * 0.61  # in Newtons
         A_mean = np.mean([m1.values[0] for m1 in m1_tmp])
         A2_mean = np.mean([m1.values[1] for m1 in m1_tmp])
-        self.scale_X2 = A_mean/force
-        self.scale_X3 = A_mean*A2_mean/force
+        self.scale_X2 = A_mean / force
+        self.scale_X3 = A_mean * A2_mean / force
+        self.A2_mean = A2_mean
 
-        print('X2 to X3 ratio:', A2_mean)
+        print('X3 to X2 ratio:', A2_mean)
         print('X2 response (amplitude):', A_mean)
+        self.m1_list = m1_tmp
 
         return m1_tmp
+
+    def build_harmonics_array(self, freq):
+        """
+        Calculate the amplitude for all BDFs at a specific frequency
+        :param freq: frequency to be tested
+        :return: response (X2 amplitude) array
+        """
+
+        fit_kwargs = {'A': 0, 'f': freq, 'phi': 0, 'A2': self.scale_A2, 'f2': freq,
+                      'delta_phi': 0,
+                      'error_A': 1, 'error_f': 1, 'error_phi': 0.1, 'errordef': 1,
+                      'error_A2': 1, 'error_f2': 1, 'error_delta_phi': 0.1,
+                      'limit_phi': [0, 2 * np.pi], 'limit_delta_phi': [-0.1, 0.1],
+                      'limit_A': [-1000, 1000], 'limit_A2': [0, 1000],
+                      'print_level': 0, 'fix_f': True, 'fix_phi': False, 'fix_f2': True, 'fix_delta_phi': True,
+                      'fix_A2': True}
+
+        m1_tmp = [self.get_amplitude(bdf=bdf_, noise_rms=self.noise_list_x2[i], noise_rms2=self.noise_list_x3[i],
+                                     **fit_kwargs)[2] for i, bdf_ in enumerate(self.BDFs)]
+
+        self.m1_list = m1_tmp
+        self.Harmonics_list = [freq]
+        self.Harmonics_array = np.array([m1.values[0] for m1 in m1_tmp])
+
+        A_mean = np.mean(self.Harmonics_array)
+
+        print('X [N]:', A_mean / self.scale_X2)
+        print('X2 response (amplitude):', A_mean)
+
+        return self.Harmonics_array
