@@ -145,7 +145,6 @@ class GravityFramework:
                 self.get_amplitude(bdf=bdf_, noise_rms=self.noise_list_x2[i], noise_rms2=self.noise_list_x3[i],
                                    **fit_kwargs)[2])
 
-
         self.m1_list = m1_tmp
         self.Harmonics_list = [freq]
         self.Harmonics_array = np.array([m1.values[0] for m1 in m1_tmp])
@@ -155,4 +154,4 @@ class GravityFramework:
         print('X [N]:', A_mean / self.scale_X2)
         print('X2 response (amplitude):', A_mean)
 
-        return self.Harmonics_array
+        return self.Harmonics_array, m1_tmp
