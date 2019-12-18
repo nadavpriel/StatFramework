@@ -103,7 +103,7 @@ class GravityFramework:
                       'error_A': 1, 'error_f': 1, 'error_phi': 0.1, 'errordef': 1,
                       'error_A2': 1, 'error_f2': 1, 'error_delta_phi': 0.1,
                       'limit_phi': [0, 2 * np.pi], 'limit_delta_phi': [-0.1, 0.1],
-                      'limit_A': [-1000, 1000], 'limit_A2': [0, 1000],
+                      'limit_A': [0, 1000], 'limit_A2': [0, 1000],
                       'print_level': 0, 'fix_f': True, 'fix_phi': False, 'fix_f2': True, 'fix_delta_phi': True,
                       'fix_A2': False}
 
@@ -135,7 +135,7 @@ class GravityFramework:
                       'error_A': 1, 'error_f': 1, 'error_phi': 0.1, 'errordef': 1,
                       'error_A2': 1, 'error_f2': 1, 'error_delta_phi': 0.1,
                       'limit_phi': [0, 2 * np.pi], 'limit_delta_phi': [-0.1, 0.1],
-                      'limit_A': [-1000, 1000], 'limit_A2': [0, 1000],
+                      'limit_A': [0, 1000], 'limit_A2': [0, 1000],
                       'print_level': 0, 'fix_f': True, 'fix_phi': False, 'fix_f2': True, 'fix_delta_phi': True,
                       'fix_A2': True}
         m1_tmp = []
