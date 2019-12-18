@@ -138,9 +138,13 @@ class GravityFramework:
                       'limit_A': [-1000, 1000], 'limit_A2': [0, 1000],
                       'print_level': 0, 'fix_f': True, 'fix_phi': False, 'fix_f2': True, 'fix_delta_phi': True,
                       'fix_A2': True}
+        m1_tmp = []
+        for i, bdf_ in enumerate(self.BDFs):
+            print(i, '/', len(self.BDFs))
+            m1_tmp.append(
+                self.get_amplitude(bdf=bdf_, noise_rms=self.noise_list_x2[i], noise_rms2=self.noise_list_x3[i],
+                                   **fit_kwargs)[2])
 
-        m1_tmp = [self.get_amplitude(bdf=bdf_, noise_rms=self.noise_list_x2[i], noise_rms2=self.noise_list_x3[i],
-                                     **fit_kwargs)[2] for i, bdf_ in enumerate(self.BDFs)]
 
         self.m1_list = m1_tmp
         self.Harmonics_list = [freq]
