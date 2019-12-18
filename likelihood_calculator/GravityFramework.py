@@ -130,7 +130,7 @@ class GravityFramework:
         :return: response (X2 amplitude) array
         """
 
-        fit_kwargs = {'A': 0, 'f': freq, 'phi': 0, 'A2': self.scale_A2, 'f2': freq,
+        fit_kwargs = {'A': 0, 'f': freq, 'phi': 0, 'A2': self.A2_mean, 'f2': freq,
                       'delta_phi': 0,
                       'error_A': 1, 'error_f': 1, 'error_phi': 0.1, 'errordef': 1,
                       'error_A2': 1, 'error_f2': 1, 'error_delta_phi': 0.1,
