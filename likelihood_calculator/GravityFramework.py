@@ -43,16 +43,16 @@ class GravityFramework:
 
         plt.show()
 
-    def get_amplitude(self, bdf_i, harmonic_num, noise_rms, noise_rms2, bandwidth=1, **fit_kwargs):
+    def get_amplitude(self, bdf, harmonic_num, noise_rms, noise_rms2, bandwidth=1, **fit_kwargs):
         """
         Fit and extract the amplitude of one harmonic from one particular file
         :param harmonic_num: which harmonic to fit
         :param bandwidth: bandpass bandwidth
         :param noise_rms, noise_rms2: noise std of X2 and X3
-        :param bdf_i: index of the bdf dataset to be used
+        :param bdf: bdf dataset to be used
         :return: amplitude, error
         """
-        bb = self.BDFs[bdf_i]
+        bb = bdf
         frequency = self.fundamental_freq * harmonic_num
 
         xx2 = bb.response_at_freq2('x', frequency, bandwidth=bandwidth) * 50000
@@ -67,7 +67,6 @@ class GravityFramework:
                                          plot=False, suppress_print=True, **fit_kwargs)
 
         print('***************************************************')
-        print('bdf_i: ', bdf_i, ', frequency: ', frequency)
         print('X2-amplitude: ', '{:.2e}'.format(np.abs(m1_tmp.values[0])))
         print('reduced chi2: ', m1_tmp.fval / (len(xx2) - 3))
 
@@ -106,10 +105,11 @@ class GravityFramework:
                       'limit_A': [-1000, 1000], 'limit_A2': [0, 1000],
                       'print_level': 0, 'fix_f': True, 'fix_phi': False, 'fix_f2': True, 'fix_delta_phi': True,
                       'fix_A2': False}
+
         tmp_freq = self.fundamental_freq
         self.fundamental_freq = drive_freq
-        m1_tmp = [self.get_amplitude(bdf_i=i, harmonic_num=harmonic, noise_rms=1, noise_rms2=1, **fit_kwargs)[2] for i
-                  in range(len(self.BDFs))]
+        m1_tmp = [self.get_amplitude(bdf=bdf_, harmonic_num=harmonic, noise_rms=1, noise_rms2=1, **fit_kwargs)[2] for
+                  bdf_ in bdf_list]
         self.fundamental_freq = tmp_freq
 
         force = charges*1.6e-19*20/8e-3*0.61  # in Newtons
