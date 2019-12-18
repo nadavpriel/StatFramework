@@ -43,17 +43,16 @@ class GravityFramework:
 
         plt.show()
 
-    def get_amplitude(self, bdf, harmonic_num, noise_rms, noise_rms2, bandwidth=1, **fit_kwargs):
+    def get_amplitude(self, bdf, noise_rms, noise_rms2, bandwidth=1, **fit_kwargs):
         """
         Fit and extract the amplitude of one harmonic from one particular file
-        :param harmonic_num: which harmonic to fit
         :param bandwidth: bandpass bandwidth
         :param noise_rms, noise_rms2: noise std of X2 and X3
         :param bdf: bdf dataset to be used
         :return: amplitude, error
         """
         bb = bdf
-        frequency = self.fundamental_freq * harmonic_num
+        frequency = fit_kwargs['f']
 
         xx2 = bb.response_at_freq2('x', frequency, bandwidth=bandwidth) * 50000
         xx2 = xx2[5000:-5000]  # cut out the first and last second
@@ -108,7 +107,7 @@ class GravityFramework:
 
         tmp_freq = self.fundamental_freq
         self.fundamental_freq = drive_freq
-        m1_tmp = [self.get_amplitude(bdf=bdf_, harmonic_num=harmonic, noise_rms=1, noise_rms2=1, **fit_kwargs)[2] for
+        m1_tmp = [self.get_amplitude(bdf=bdf_, noise_rms=1, noise_rms2=1, **fit_kwargs)[2] for
                   bdf_ in bdf_list]
         self.fundamental_freq = tmp_freq
 
