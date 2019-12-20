@@ -14,6 +14,18 @@ class LikelihoodAnalyser:
         self.noise_sigma = 1  # gaussian white noise std
         self.noise_sigma2 = 1  # gaussian white noise std
 
+        self.template = None
+
+    def least_squares_template(self, alpha):
+        """
+        least squares for minimization - sine function
+        :param alpha: scale factor
+        :return: cost function - sum of squares
+        """
+        func_t = alpha * self.template  # function to minimize
+        res = sum(np.power(np.abs(self.data_y - func_t), 2))
+        return res
+
     def least_squares_sine(self, A, f, phi):
         """
         least squares for minimization - sine function
@@ -71,6 +83,25 @@ class LikelihoodAnalyser:
         res = sum(np.power(np.abs(self.data_y - func_t), 2))
         res += len(self.data_x) * np.log(np.pi * sigma ** 2)
         return res / sigma ** 2
+
+    def find_mle_template(self, x, template, center_freq, bandwidth, **kwargs):
+        """
+        The function is fitting the data with a  template using iminuit.
+        The fitting is done after applying a bandpass filter to both the template and the data.
+        :param template: template for the fit
+        :param bandwidth: bandwidth for butter filter [Hz]
+        :param center_freq: center frequency for the bandpass filter
+        :param x: 1 dim. position data (time domain)
+        :return: minimizer result
+        """
+        # filtering the template and the data
+        b, a = signal.butter(3, [2. * (center_freq - bandwidth / 2.) / self.fsamp,
+                                 2. * (center_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
+        self.data_y = signal.filtfilt(b, a, x)[5000:-5000]
+        self.template = signal.filtfilt(b, a, template)[5000:-5000]
+        mimuit_minimizer = Minuit(self.least_squares_template, **kwargs)
+        mimuit_minimizer.migrad(ncall=50000)
+        return mimuit_minimizer
 
     def find_mle_sin(self, x, drive_freq=0, fsamp=5000, bandwidth=50, noise_rms=0, plot=False, suppress_print=True,
                      bimodal=False, **kwargs):
@@ -138,7 +169,8 @@ class LikelihoodAnalyser:
 
         return mimuit_minimizer
 
-    def find_mle_2sin(self, x, x2, drive_freq=0, fsamp=5000, bandwidth=50, noise_rms=0, noise_rms2=0, plot=False, suppress_print=True,
+    def find_mle_2sin(self, x, x2, drive_freq=0, fsamp=5000, bandwidth=50, noise_rms=0, noise_rms2=0, plot=False,
+                      suppress_print=True,
                       **kwargs):
         """
         The function is fitting the data with a sine template using iminuit.

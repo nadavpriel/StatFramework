@@ -5,6 +5,11 @@ from scipy import signal
 
 from likelihood_calculator import likelihood_analyser
 
+import sys
+
+sys.path.append('/home/analysis_user/New_trap_code/SensitivityFramework/')
+from signal_model_utilities import *
+
 
 class GravityFramework:
     def __init__(self):
@@ -70,6 +75,25 @@ class GravityFramework:
         print('***************************************************')
         print('X2-amplitude: ', '{:.2e}'.format(np.abs(m1_tmp.values[0])))
         print('reduced chi2: ', m1_tmp.fval / (len(xx2) - 3))
+
+        return m1_tmp.values[0], m1_tmp.errors[0], m1_tmp
+
+    def get_alpha(self, bdf, center_freq, bandwidth, separation=10e-6, stroke=50e-6, frequency=13,
+                  lambda_par=100e-6, **fit_kwargs):
+        """
+         Fit and extract the scale factor for the yukawa force compared to 10^10
+         :param bandwidth: bandpass bandwidth
+         :param center_freq: bandpass filter center frequency
+         :param bdf: bdf dataset to be used
+         :return: amplitude, error
+         """
+        template = force_vs_time(separation=separation, height=0e-6, stroke=stroke, frequency=frequency,
+                                 direction="x", lambda_par=lambda_par, yuk_or_grav="yuk", alpha=1e10)
+        m1_tmp = self.lc_i.find_mle_template(bdf.x2 * 50000, template, **fit_kwargs)
+
+        print('***************************************************')
+        print('alpha: ', '{:.2e}'.format(m1_tmp.values[0]))
+        print('reduced chi2: ', m1_tmp.fval / (len(bdf.x2) - 1))
 
         return m1_tmp.values[0], m1_tmp.errors[0], m1_tmp
 
