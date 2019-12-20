@@ -99,6 +99,10 @@ class LikelihoodAnalyser:
                                  2. * (center_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
         self.data_y = signal.filtfilt(b, a, x)[5000:-5000]
         self.template = signal.filtfilt(b, a, template)[5000:-5000]
+        _,ax = plt.subplots()
+        ax.scatter(range(self.data_y),self.data_y)
+        ax.scatter(range(self.data_y), self.template)
+
         mimuit_minimizer = Minuit(self.least_squares_template, **kwargs)
         mimuit_minimizer.migrad(ncall=50000)
         return mimuit_minimizer
