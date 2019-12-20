@@ -90,7 +90,7 @@ class GravityFramework:
         template = force_vs_time(separation=separation, height=0e-6, stroke=stroke, frequency=frequency,
                                  direction="x", lambda_par=lambda_par, yuk_or_grav="yuk", alpha=1e10)
         template = list(template[1])*10
-        m1_tmp = self.lc_i.find_mle_template(bdf.x2 * 50000, template, center_freq, bandwidth, **fit_kwargs)
+        m1_tmp = self.lc_i.find_mle_template(bdf.x2 * 50000, template*self.scale_X2, center_freq, bandwidth, **fit_kwargs)
 
         print('***************************************************')
         print('alpha: ', '{:.2e}'.format(m1_tmp.values[0]))
