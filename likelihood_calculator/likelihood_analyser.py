@@ -22,7 +22,7 @@ class LikelihoodAnalyser:
         :param alpha: scale factor
         :return: cost function - sum of squares
         """
-        func_t = alpha * self.template  # function to minimize
+        func_t = alpha * np.array(self.template)  # function to minimize
         res = sum(np.power(np.abs(self.data_y - func_t), 2))
         return res
 
