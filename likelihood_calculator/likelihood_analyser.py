@@ -15,10 +15,11 @@ class LikelihoodAnalyser:
         self.noise_sigma2 = 1  # gaussian white noise std
 
         self.template = None
+        self.template2 = None
 
     def least_squares_template(self, alpha, phase):
         """
-        least squares for minimization - sine function
+        least squares for minimization - any given template
         :param alpha: scale factor
         :return: cost function - sum of squares
         """
@@ -27,6 +28,23 @@ class LikelihoodAnalyser:
 
         res = sum(np.power(np.abs(self.data_y - func_t), 2))
         return res
+
+    def least_squares_template2(self, alpha, phase):
+        """
+        least squares for minimization - 2 templates for 2 datasets with shared phase and scale
+        :param alpha: scale factor
+        :return: cost function - sum of squares
+        """
+        func_t = alpha * np.array(self.template)  # function to minimize
+        func_t = np.roll(func_t, int(phase))
+
+        func_t2 = alpha * np.array(self.template2)  # function to minimize
+        func_t2 = np.roll(func_t2, int(phase))
+
+        res = sum(np.power(np.abs(self.data_y - func_t), 2))
+        res2 = sum(np.power(np.abs(self.data_y2 - func_t2), 2))
+
+        return res+res2
 
     def least_squares_sine(self, A, f, phi):
         """
@@ -101,12 +119,33 @@ class LikelihoodAnalyser:
                                  2. * (center_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
         self.data_y = signal.filtfilt(b, a, x)[5000:-5000]
         self.template = signal.filtfilt(b, a, template)[5000:-5000]
-        # _, ax = plt.subplots()
-        # ax.scatter(range(40000),self.data_y)
-        # ax.scatter(range(40000), self.template)
 
         mimuit_minimizer = Minuit(self.least_squares_template, **kwargs)
         mimuit_minimizer.migrad(ncall=50000)
+        return mimuit_minimizer
+
+    def find_mle_template2(self, x2, template2, x3, template3, center_freq, bandwidth, **kwargs):
+        """
+        The function is fitting the data with a  template using iminuit.
+        The fitting is done after applying a bandpass filter to both the template and the data.
+        :param template: template for the fit
+        :param bandwidth: bandwidth for butter filter [Hz]
+        :param center_freq: center frequency for the bandpass filter
+        :param x: 1 dim. position data (time domain)
+        :return: minimizer result
+        """
+        # filtering the template and the data
+        b, a = signal.butter(3, [2. * (center_freq - bandwidth / 2.) / self.fsamp,
+                                 2. * (center_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
+        self.data_y = signal.filtfilt(b, a, x2)[5000:-5000]  # x2 data - QPD carrier amplitude
+        self.template = signal.filtfilt(b, a, template2)[5000:-5000]  # x2 template
+
+        self.data_y2 = signal.filtfilt(b, a, x3)[5000:-5000]  # x3 data - QPD carrier phase
+        self.template2 = signal.filtfilt(b, a, template3)[5000:-5000]  # x3 template
+
+        mimuit_minimizer = Minuit(self.least_squares_template2, **kwargs)
+        mimuit_minimizer.migrad(ncall=50000)
+
         return mimuit_minimizer
 
     def find_mle_sin(self, x, drive_freq=0, fsamp=5000, bandwidth=50, noise_rms=0, plot=False, suppress_print=True,
