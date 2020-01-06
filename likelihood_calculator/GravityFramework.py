@@ -99,7 +99,7 @@ class GravityFramework:
 
         template = force_vs_time(separation=separation*1e-6, height=height, stroke=stroke*1e-6, frequency=frequency,
                                  direction="x", lambda_par=lambda_par, yuk_or_grav="yuk", alpha=1e10)
-        template = list(template[1])*time_sec
+        template = list(template[1])*int(time_sec)
 
         m1_tmp = self.lc_i.find_mle_template(bdf.x2 * 50000, np.array(template)*self.scale_X2, center_freq=center_freq,
                                              bandwidth=bandwidth, **fit_kwargs)
@@ -132,7 +132,7 @@ class GravityFramework:
 
         template = force_vs_time(separation=separation*1e-6, height=height, stroke=stroke*1e-6, frequency=frequency,
                                  direction="x", lambda_par=lambda_par, yuk_or_grav="yuk", alpha=1e10)
-        template = list(template[1])*time_sec
+        template = list(template[1])*int(time_sec)
 
         m1_tmp = self.lc_i.find_mle_template2(x2=bdf.x2 * 50000, template2=np.array(template)*self.scale_X2,
                                               x3=bdf.x3/6, template3=np.array(template)*self.scale_X3,
