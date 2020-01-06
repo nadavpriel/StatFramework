@@ -79,7 +79,7 @@ class GravityFramework:
         return m1_tmp.values[0], m1_tmp.errors[0], m1_tmp
 
     def get_alpha(self, bdf, center_freq, bandwidth, x_focous=400, frequency=13,
-                  lambda_par=100e-6, height=0e-6, print=False, **fit_kwargs):
+                  lambda_par=100e-6, height=0e-6, suppress_print=True, **fit_kwargs):
         """
          Fit and extract the scale factor for the yukawa force compared to 10^10
          :param bandwidth: bandpass bandwidth
@@ -92,7 +92,7 @@ class GravityFramework:
         separation = x_focous-cant_pos_x-4.8/2
         time_sec = len(bdf.x2)/self.fsamp
 
-        if print:
+        if suppress_print==False:
             print('Separation (face to face): ',separation)
             print('Stroke: ', stroke)
             print('Time: ', time_sec)
