@@ -89,19 +89,20 @@ class GravityFramework:
          """
         stroke = np.std(bdf.cant_pos[1] * 50) * np.sqrt(2) * 2  # stroke in y in micrometers
         cant_pos_x = np.mean(bdf.cant_pos[0] * 50)  # cantilever position in x for distance to sphere - in micrometers
-        separation = x_focous-cant_pos_x-4.8/2
-        time_sec = len(bdf.x2)/self.fsamp
+        separation = x_focous - cant_pos_x - 4.8 / 2
+        time_sec = len(bdf.x2) / self.fsamp
 
-        if suppress_print==False:
-            print('Separation (face to face): ',separation)
+        if suppress_print == False:
+            print('Separation (face to face): ', separation)
             print('Stroke: ', stroke)
             print('Time: ', time_sec)
 
-        template = force_vs_time(separation=separation*1e-6, height=height, stroke=stroke*1e-6, frequency=frequency,
+        template = force_vs_time(separation=separation * 1e-6, height=height, stroke=stroke * 1e-6, frequency=frequency,
                                  direction="x", lambda_par=lambda_par, yuk_or_grav="yuk", alpha=1e10)
-        template = list(template[1])*int(time_sec)
+        template = list(template[1]) * int(time_sec)
 
-        m1_tmp = self.lc_i.find_mle_template(bdf.x2 * 50000, np.array(template)*self.scale_X2, center_freq=center_freq,
+        m1_tmp = self.lc_i.find_mle_template(bdf.x2 * 50000, np.array(template) * self.scale_X2,
+                                             center_freq=center_freq,
                                              bandwidth=bandwidth, **fit_kwargs)
 
         print('***************************************************')
@@ -111,7 +112,7 @@ class GravityFramework:
         return m1_tmp.values[0], m1_tmp.errors[0], m1_tmp
 
     def get_alpha2(self, bdf, center_freq, bandwidth, x_focous=400, frequency=13,
-                  lambda_par=100e-6, height=0e-6, suppress_print=True, **fit_kwargs):
+                   lambda_par=100e-6, height=0e-6, suppress_print=True, **fit_kwargs):
         """
          Fit and extract the scale factor for the yukawa force compared to 10^10
          This function uses the correlated X2 and X3 signals - QPD signal amplitude and phase
@@ -121,21 +122,21 @@ class GravityFramework:
          :return: amplitude, error
          """
         stroke = np.std(bdf.cant_pos[1] * 50) * np.sqrt(2) * 2  # stroke in y in micrometers
-        cant_pos_x = np.mean(bdf.cant_pos[0] * 50)  # cantilever position in x for distance to sphere - in micrometers
-        separation = x_focous-cant_pos_x-4.8/2
-        time_sec = len(bdf.x2)/self.fsamp
+        cant_pos_x = np.mean(bdf.cant_pos[0])  # cantilever position in x for distance to sphere - in volts
+        separation = x_focous - voltage_to_position(cant_pos_x) - 4.8 / 2
+        time_sec = len(bdf.x2) / self.fsamp
 
-        if suppress_print==False:
+        if suppress_print == False:
             print('Separation (face to face): ', separation)
             print('Stroke: ', stroke)
             print('Time: ', time_sec)
 
-        template = force_vs_time(separation=separation*1e-6, height=height, stroke=stroke*1e-6, frequency=frequency,
+        template = force_vs_time(separation=separation * 1e-6, height=height, stroke=stroke * 1e-6, frequency=frequency,
                                  direction="x", lambda_par=lambda_par, yuk_or_grav="yuk", alpha=1e10)
-        template = list(template[1])*int(time_sec)
+        template = list(template[1]) * int(time_sec)
 
-        m1_tmp = self.lc_i.find_mle_template2(x2=bdf.x2 * 50000, template2=np.array(template)*self.scale_X2,
-                                              x3=bdf.x3/6, template3=np.array(template)*self.scale_X3,
+        m1_tmp = self.lc_i.find_mle_template2(x2=bdf.x2 * 50000, template2=np.array(template) * self.scale_X2,
+                                              x3=bdf.x3 / 6, template3=np.array(template) * self.scale_X3,
                                               center_freq=center_freq, bandwidth=bandwidth, **fit_kwargs)
 
         print('***************************************************')
