@@ -33,6 +33,8 @@ class GravityFramework:
         self.fsamp = 5000
         self.lc_i = likelihood_analyser.LikelihoodAnalyser()
         self.m1_list = None  # last m1 list (last fitting)
+        self.last_phase = 0
+        self.last_A = 0
 
     def plot_dataset(self, bdf_i, res=50000):
         """
@@ -203,20 +205,24 @@ class GravityFramework:
         :return: response (X2 amplitude) array
         """
 
-        fit_kwargs = {'A': 0, 'f': freq, 'phi': 0, 'A2': self.A2_mean, 'f2': freq,
-                      'delta_phi': 0,
-                      'error_A': 1, 'error_f': 1, 'error_phi': 0.5, 'errordef': 1,
-                      'error_A2': 1, 'error_f2': 1, 'error_delta_phi': 0.1,
-                      'limit_phi': [-np.pi, np.pi], 'limit_delta_phi': [-0.1, 0.1],
-                      'limit_A': [0, 1000], 'limit_A2': [0, 1000],
-                      'print_level': 0, 'fix_f': True, 'fix_phi': False, 'fix_f2': True, 'fix_delta_phi': True,
-                      'fix_A2': True}
         m1_tmp = []
         for i, bdf_ in enumerate(self.BDFs):
             print(i, '/', len(self.BDFs))
-            m1_tmp.append(
-                self.get_amplitude(bdf=bdf_, noise_rms=self.noise_list_x2[i], noise_rms2=self.noise_list_x3[i],
-                                   **fit_kwargs)[2])
+
+            fit_kwargs = {'A': self.last_A, 'f': freq, 'phi': self.last_phase, 'A2': self.A2_mean, 'f2': freq,
+                          'delta_phi': 0,
+                          'error_A': 1, 'error_f': 1, 'error_phi': 0.5, 'errordef': 1,
+                          'error_A2': 1, 'error_f2': 1, 'error_delta_phi': 0.1,
+                          'limit_phi': [-2*np.pi, 2*np.pi], 'limit_delta_phi': [-0.1, 0.1],
+                          'limit_A': [0, 1000], 'limit_A2': [0, 1000],
+                          'print_level': 0, 'fix_f': True, 'fix_phi': False, 'fix_f2': True, 'fix_delta_phi': True,
+                          'fix_A2': True}
+
+            m1_tmp2 = self.get_amplitude(bdf=bdf_, noise_rms=self.noise_list_x2[i], noise_rms2=self.noise_list_x3[i],
+                                         **fit_kwargs)[2]
+            self.last_A = m1_tmp2.values[0]
+            self.last_phase = m1_tmp2.values[1]
+            m1_tmp.append(m1_tmp2)
 
         self.m1_list = m1_tmp
         self.Harmonics_list = [freq]
