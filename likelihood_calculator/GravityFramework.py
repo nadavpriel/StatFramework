@@ -4,6 +4,7 @@ import matplotlib
 from scipy import signal
 
 from likelihood_calculator import likelihood_analyser
+from likelihood_calculator import auxiliary_functions as aux
 
 import sys
 
@@ -89,10 +90,10 @@ class GravityFramework:
          """
         stroke = np.std(bdf.cant_pos[1] * 50) * np.sqrt(2) * 2  # stroke in y in micrometers
         cant_pos_x = np.mean(bdf.cant_pos[0] * 50)  # cantilever position in x for distance to sphere - in micrometers
-        separation = x_focous - cant_pos_x - 4.8 / 2
+        separation = x_focous - aux.voltage_to_position(cant_pos_x) - 4.8 / 2
         time_sec = len(bdf.x2) / self.fsamp
 
-        if suppress_print == False:
+        if not suppress_print:
             print('Separation (face to face): ', separation)
             print('Stroke: ', stroke)
             print('Time: ', time_sec)
@@ -123,10 +124,10 @@ class GravityFramework:
          """
         stroke = np.std(bdf.cant_pos[1] * 50) * np.sqrt(2) * 2  # stroke in y in micrometers
         cant_pos_x = np.mean(bdf.cant_pos[0])  # cantilever position in x for distance to sphere - in volts
-        separation = x_focous - voltage_to_position(cant_pos_x) - 4.8 / 2
+        separation = x_focous - aux.voltage_to_position(cant_pos_x) - 4.8 / 2
         time_sec = len(bdf.x2) / self.fsamp
 
-        if suppress_print == False:
+        if not suppress_print:
             print('Separation (face to face): ', separation)
             print('Stroke: ', stroke)
             print('Time: ', time_sec)
