@@ -108,13 +108,14 @@ class GravityFramework:
 
         return m1_tmp.values[0], m1_tmp.errors[0], m1_tmp
 
-    def get_alpha(self, bdf, center_freq, bandwidth, x_focous=400, frequency=13,
+    def get_alpha(self, bdf, center_freq, bandwidth, direction='x', x_focous=400, frequency=13,
                   lambda_par=100e-6, height=0e-6, suppress_print=True, **fit_kwargs):
         """
          Fit and extract the scale factor for the yukawa force compared to 10^10
          :param bandwidth: bandpass bandwidth
          :param center_freq: bandpass filter center frequency
          :param bdf: bdf dataset to be used
+         :param direction: force firection
          :return: amplitude, error
          """
         stroke = np.std(bdf.cant_pos[1] * 50) * np.sqrt(2) * 2  # stroke in y in micrometers
@@ -128,10 +129,17 @@ class GravityFramework:
             print('Time: ', time_sec)
 
         template = force_vs_time(separation=separation * 1e-6, height=height, stroke=stroke * 1e-6, frequency=frequency,
-                                 direction="x", lambda_par=lambda_par, yuk_or_grav="yuk", alpha=1e10)
+                                 direction=direction, lambda_par=lambda_par, yuk_or_grav="yuk", alpha=1e10)
         template = list(template[1]) * int(time_sec)
 
-        m1_tmp = self.lc_i.find_mle_template(bdf.x2 * 50000, np.array(template) * self.scale_X2,
+        if direction == 'x':
+            xx = bdf.x2 * 50000
+            tmp_scale = self.scale_X2
+        elif direction == 'z':
+            xx = bdf.z2
+            tmp_scale = self.scale_Z2
+
+        m1_tmp = self.lc_i.find_mle_template(xx, np.array(template) * tmp_scale,
                                              center_freq=center_freq,
                                              bandwidth=bandwidth, **fit_kwargs)
 
