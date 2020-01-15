@@ -214,7 +214,7 @@ class GravityFramework:
                       'error_A': 1, 'error_f': 1, 'error_phi': 0.5, 'errordef': 1,
                       'error_A2': 1, 'error_f2': 1, 'error_delta_phi': 0.1,
                       'limit_phi': [-2 * np.pi, 2 * np.pi], 'limit_delta_phi': [-0.1, 0.1],
-                      'limit_A': [0, 100000], 'limit_A2': [0, 1000],
+                      'limit_A': [0, 1000], 'limit_A2': [0, 1000],
                       'print_level': 0, 'fix_f': True, 'fix_phi': False, 'fix_f2': True, 'fix_delta_phi': True,
                       'fix_A2': False}
 
@@ -245,7 +245,7 @@ class GravityFramework:
         fit_kwargs = {'A': 10, 'f': drive_freq, 'phi': 0,
                       'error_A': 1, 'error_f': 1, 'error_phi': 0.5, 'errordef': 1,
                       'limit_phi': [-2 * np.pi, 2 * np.pi],
-                      'limit_A': [0, 1000],
+                      'limit_A': [0, 100000],
                       'print_level': 0, 'fix_f': True, 'fix_phi': False}
 
         m1_tmp = [self.get_z_amplitude(bdf=bdf_, noise_rms=1, **fit_kwargs)[2] for
