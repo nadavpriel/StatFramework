@@ -243,7 +243,6 @@ class GravityFramework:
         :return: m1_tmp, list of the minimizer
         """
         fit_kwargs = {'A': 10, 'f': drive_freq, 'phi': 0,
-                      'delta_phi': 0,
                       'error_A': 1, 'error_f': 1, 'error_phi': 0.5, 'errordef': 1,
                       'limit_phi': [-2 * np.pi, 2 * np.pi],
                       'limit_A': [0, 1000],
