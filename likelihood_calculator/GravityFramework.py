@@ -19,8 +19,10 @@ class GravityFramework:
         self.minimizer_2d_results = None  # using x2 and x3
         self.noise_rms_x2 = 1  # x2 noise gaussian width
         self.noise_rms_x3 = 1  # x3 noise gaussian width
+        self.noise_rms_z2 = 1  # z2 noise gaussian width
         self.noise_list_x2 = []  # x2 noise values per BDF - sideband
         self.noise_list_x3 = []  # x3 noise values per BDF - sideband
+        self.noise_list_z2 = []  # z2 noise values per BDF - sideband
         self.avg_list_x2 = []  # x2 average response - force calibration files
         self.avg_list_x3 = []  # x3 average response - force calibration files
         self.fundamental_freq = 13  # fundamental frequency
@@ -29,6 +31,7 @@ class GravityFramework:
         self.Error_array = None  # errors of the amplitudes
         self.scale_X2 = 1  # scale X2 signal to force in Newtons
         self.scale_X3 = 1  # scale X3 signal to force in Newtons
+        self.scale_Z2 = 1  # scale Z2 signal to force in Newtons
         self.A2_mean = 1  # X3/X2 mean
         self.fsamp = 5000
         self.lc_i = likelihood_analyser.LikelihoodAnalyser()
@@ -78,6 +81,30 @@ class GravityFramework:
         print('***************************************************')
         print('X2-amplitude: ', '{:.2e}'.format(np.abs(m1_tmp.values[0])))
         print('reduced chi2: ', m1_tmp.fval / (len(xx2) - 3))
+
+        return m1_tmp.values[0], m1_tmp.errors[0], m1_tmp
+
+    def get_z_amplitude(self, bdf, noise_rms, bandwidth=1, **fit_kwargs):
+        """
+        Fit and extract the Z2 amplitude of one harmonic from one particular file
+        :param bandwidth: bandpass bandwidth
+        :param noise_rms: noise std of Z2 and X3
+        :param bdf: bdf dataset to be used
+        :return: amplitude, error
+        """
+        bb = bdf
+        frequency = fit_kwargs['f']
+
+        xx2 = bb.response_at_freq2('z', frequency, bandwidth=bandwidth)
+        xx2 = xx2[5000:-5000]  # cut out the first and last second
+
+        m1_tmp = self.lc_i.find_mle_sin(xx2, fsamp=self.fsamp,
+                                        noise_rms=noise_rms,
+                                        plot=False, suppress_print=True, **fit_kwargs)
+
+        print('***************************************************')
+        print('X2-amplitude: ', '{:.2e}'.format(np.abs(m1_tmp.values[0])))
+        print('reduced chi2: ', m1_tmp.fval / (len(xx2) - 2))
 
         return m1_tmp.values[0], m1_tmp.errors[0], m1_tmp
 
@@ -164,6 +191,16 @@ class GravityFramework:
         print('x2 noise rms: ', self.noise_rms_x2)
         print('x3 noise rms: ', self.noise_rms_x3)
 
+    def build_noise_array_z(self, sideband_freq, bandwidth=1):
+        self.noise_list_z2 = []
+
+        for bb in self.BDFs:
+            xx2 = bb.response_at_freq2('z', sideband_freq, bandwidth=bandwidth)
+            self.noise_list_z2.append(np.std(xx2[5000:-5000]))
+
+        self.noise_rms_z2 = np.mean(self.noise_list_z2)
+        print('z2 noise rms: ', self.noise_rms_z2)
+
     def build_x_response(self, bdf_list, drive_freq, charges):
         """
         Calculates the X response by fitting X2 and X3 simultaneously
@@ -172,7 +209,6 @@ class GravityFramework:
         :param charges: charge state on the sphere
         :return: m1_tmp, list of the minimizer
         """
-        harmonic = 1
         fit_kwargs = {'A': 10, 'f': drive_freq, 'phi': 0, 'A2': 2, 'f2': drive_freq,
                       'delta_phi': 0,
                       'error_A': 1, 'error_f': 1, 'error_phi': 0.5, 'errordef': 1,
@@ -198,13 +234,38 @@ class GravityFramework:
 
         return m1_tmp
 
+    def build_z_response(self, bdf_list, drive_freq, charges):
+        """
+        Calculates the Z response by fitting sine
+        :param bdf_list: list of force calibration BeadDataFiles
+        :param drive_freq: the drive frequency on the electrodes
+        :param charges: charge state on the sphere
+        :return: m1_tmp, list of the minimizer
+        """
+        fit_kwargs = {'A': 10, 'f': drive_freq, 'phi': 0,
+                      'delta_phi': 0,
+                      'error_A': 1, 'error_f': 1, 'error_phi': 0.5, 'errordef': 1,
+                      'limit_phi': [-2 * np.pi, 2 * np.pi],
+                      'limit_A': [0, 1000],
+                      'print_level': 0, 'fix_f': True, 'fix_phi': False}
+
+        m1_tmp = [self.get_z_amplitude(bdf=bdf_, noise_rms=1, **fit_kwargs)[2] for
+                  bdf_ in bdf_list]
+
+        force = charges * 1.6e-19 * 20 / 8e-3 * 0.61  # in Newtons
+        A_mean = np.mean([m1.values[0] for m1 in m1_tmp])
+        self.scale_Z2 = A_mean / force
+        print('Z2 response (amplitude):', A_mean)
+        self.m1_list = m1_tmp
+
+        return m1_tmp
+
     def build_harmonics_array(self, freq):
         """
         Calculate the amplitude for all BDFs at a specific frequency
         :param freq: frequency to be tested
         :return: response (X2 amplitude) array
         """
-
         m1_tmp = []
         for i, bdf_ in enumerate(self.BDFs):
             print(i, '/', len(self.BDFs))
@@ -213,7 +274,7 @@ class GravityFramework:
                           'delta_phi': 0,
                           'error_A': 1, 'error_f': 1, 'error_phi': 0.5, 'errordef': 1,
                           'error_A2': 1, 'error_f2': 1, 'error_delta_phi': 0.1,
-                          'limit_phi': [-2*np.pi, 2*np.pi], 'limit_delta_phi': [-0.1, 0.1],
+                          'limit_phi': [-2 * np.pi, 2 * np.pi], 'limit_delta_phi': [-0.1, 0.1],
                           'limit_A': [0, 1000], 'limit_A2': [0, 1000],
                           'print_level': 0, 'fix_f': True, 'fix_phi': False, 'fix_f2': True, 'fix_delta_phi': True,
                           'fix_A2': True}
