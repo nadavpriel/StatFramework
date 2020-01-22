@@ -157,8 +157,8 @@ class GravityFramework:
          :param bandwidth: bandpass bandwidth
          :param center_freq: bandpass filter center frequency
          :param bdf: bdf dataset to be used
-         :param direction1: force direction of first axis
-         :param direction2: force direction of second axis
+         :param direction1: force direction of first axis - can be 'x','z','x3'
+         :param direction2: force direction of second axis - can be 'x','z','x3'
          :return: amplitude, error
          """
         # temporally overriding the stroke and separation parameters - for sensitivity estimation purposes
@@ -175,12 +175,20 @@ class GravityFramework:
             print('Time: ', time_sec)
 
         # prepare the two templates for the fit
+        if direction1 == 'x3':
+            direction_tmp = 'x'
+        else:
+            direction_tmp = direction1
         template1 = force_vs_time(separation=separation * 1e-6, height=height, stroke=stroke * 1e-6,
                                   frequency=frequency,
-                                  direction=direction1, lambda_par=lambda_par, yuk_or_grav="yuk", alpha=1e10)
+                                  direction=direction_tmp, lambda_par=lambda_par, yuk_or_grav="yuk", alpha=1e10)
+        if direction2 == 'x3':
+            direction_tmp = 'x'
+        else:
+            direction_tmp = direction2
         template2 = force_vs_time(separation=separation * 1e-6, height=height, stroke=stroke * 1e-6,
                                   frequency=frequency,
-                                  direction=direction2, lambda_par=lambda_par, yuk_or_grav="yuk", alpha=1e10)
+                                  direction=direction_tmp, lambda_par=lambda_par, yuk_or_grav="yuk", alpha=1e10)
         template1 = list(template1[1]) * int(time_sec)
         template2 = list(template2[1]) * int(time_sec)
 
@@ -189,7 +197,7 @@ class GravityFramework:
             xx1 = bdf.x2 * 50000
             tmp_scale1 = self.scale_X2
         elif direction1 == 'x3':
-            xx1 = bdf.x2/6
+            xx1 = bdf.x3/6
             tmp_scale1 = self.scale_X3
         elif direction1 == 'z':
             xx1 = bdf.z2
@@ -199,7 +207,7 @@ class GravityFramework:
             xx2 = bdf.x2 * 50000
             tmp_scale2 = self.scale_X2
         elif direction1 == 'x3':
-            xx2 = bdf.x2 / 6
+            xx2 = bdf.x3 / 6
             tmp_scale2 = self.scale_X3
         elif direction2 == 'z':
             xx2 = bdf.z2
