@@ -188,6 +188,9 @@ class GravityFramework:
         if direction1 == 'x':
             xx1 = bdf.x2 * 50000
             tmp_scale1 = self.scale_X2
+        elif direction1 == 'x3':
+            xx1 = bdf.x2/6
+            tmp_scale1 = self.scale_X3
         elif direction1 == 'z':
             xx1 = bdf.z2
             tmp_scale1 = self.scale_Z2
@@ -195,6 +198,9 @@ class GravityFramework:
         if direction2 == 'x':
             xx2 = bdf.x2 * 50000
             tmp_scale2 = self.scale_X2
+        elif direction1 == 'x3':
+            xx2 = bdf.x2 / 6
+            tmp_scale2 = self.scale_X3
         elif direction2 == 'z':
             xx2 = bdf.z2
             tmp_scale2 = self.scale_Z2
