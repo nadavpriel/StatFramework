@@ -378,7 +378,7 @@ class GravityFramework:
 
         return self.Harmonics_array, m1_tmp
 
-    def get_alpha_2d(self, bdf, center_freq, noise_freq, bandwidth, direction1='x', x_focous=400, frequency=13,
+    def get_alpha_mle_pl(self, bdf, center_freq, noise_freq, bandwidth, direction1='x', x_focous=400, frequency=13,
                      lambda_par=100e-6, height=0e-6, suppress_print=True, **fit_kwargs):
         """
          Fit and extract the scale factor for the yukawa force compared to 10^10
