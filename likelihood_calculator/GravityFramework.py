@@ -197,7 +197,7 @@ class GravityFramework:
             xx1 = bdf.x2 * 50000
             tmp_scale1 = self.scale_X2
         elif direction1 == 'x3':
-            xx1 = bdf.x3/6
+            xx1 = bdf.x3 / 6
             tmp_scale1 = self.scale_X3
         elif direction1 == 'z':
             xx1 = bdf.z2
@@ -377,3 +377,60 @@ class GravityFramework:
         print('X2 response (amplitude):', A_mean)
 
         return self.Harmonics_array, m1_tmp
+
+    def get_alpha_2d(self, bdf, center_freq, noise_freq, bandwidth, direction1='x', x_focous=400, frequency=13,
+                     lambda_par=100e-6, height=0e-6, suppress_print=True, **fit_kwargs):
+        """
+         Fit and extract the scale factor for the yukawa force compared to 10^10
+         The function is performing the fit using two axes in a correlated way
+         :param bandwidth: bandpass bandwidth
+         :param center_freq: bandpass filter center frequency
+         :param noise_freq: noise dataset center frequency
+         :param bdf: bdf dataset to be used
+         :param direction1: force direction of first axis - can be 'x','z','x3'
+         :return: amplitude, error
+         """
+        # temporally overriding the stroke and separation parameters - for sensitivity estimation purposes
+        # stroke = np.std(bdf.cant_pos[1] * 50) * np.sqrt(2) * 2  # stroke in y in micrometers
+        # cant_pos_x = np.mean(bdf.cant_pos[0])  # cantilever position in x for distance to sphere - in micrometers
+        # separation = x_focous - aux.voltage_to_position(cant_pos_x) - 4.8 / 2
+        time_sec = len(bdf.x2) / self.fsamp
+        stroke = 100  # in microns
+        separation = 6.5  # in microns
+
+        if not suppress_print:
+            print('Separation (face to face): ', separation)
+            print('Stroke: ', stroke)
+            print('Time: ', time_sec)
+
+        # prepare the two templates for the fit
+        if direction1 == 'x3':
+            direction_tmp = 'x'
+        else:
+            direction_tmp = direction1
+        template1 = force_vs_time(separation=separation * 1e-6, height=height, stroke=stroke * 1e-6,
+                                  frequency=frequency,
+                                  direction=direction_tmp, lambda_par=lambda_par, yuk_or_grav="yuk", alpha=1e10)
+        template1 = list(template1[1]) * int(time_sec)
+
+        # data preparation
+        if direction1 == 'x':
+            xx1 = bdf.x2 * 50000
+            tmp_scale1 = self.scale_X2
+        elif direction1 == 'x3':
+            xx1 = bdf.x3 / 6
+            tmp_scale1 = self.scale_X3
+        elif direction1 == 'z':
+            xx1 = bdf.z2
+            tmp_scale1 = self.scale_Z2
+
+        # find the mle
+        m1_tmp = self.lc_i.find_mle_PL(xx1, np.array(template1) * tmp_scale1,
+                                       center_freq=center_freq, noise_freq=noise_freq,
+                                       bandwidth=bandwidth, **fit_kwargs)
+
+        print('***************************************************')
+        print('alpha mle: ', '{:.2e}'.format(m1_tmp.values[0]))
+        print('reduced chi2: ', m1_tmp.fval / (len(bdf.x2) - 1))
+
+        return m1_tmp.values[0], m1_tmp.errors[0], m1_tmp
