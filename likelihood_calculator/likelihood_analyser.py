@@ -140,10 +140,11 @@ class LikelihoodAnalyser:
         mimuit_minimizer.migrad(ncall=50000)
         return mimuit_minimizer
 
-    def find_mle_PL(self, x, template, center_freq, noise_freq, bandwidth, **kwargs):
+    def find_mle_PL(self, x, template, center_freq, noise_freq, bandwidth, decimate=10, **kwargs):
         """
         The function is fitting the data with a template using iminuit and the likelihood function
         The fitting is done after applying a bandpass filter to both the template and the data.
+        :param decimate: decimate data (good for correlated datasets)
         :param template: template for the fit
         :param bandwidth: bandwidth for butter filter [Hz]
         :param center_freq: center frequency for the bandpass filter
@@ -154,12 +155,12 @@ class LikelihoodAnalyser:
         # filtering the template and the data
         b, a = signal.butter(3, [2. * (center_freq - bandwidth / 2.) / self.fsamp,
                                  2. * (center_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
-        self.data_y = signal.filtfilt(b, a, x)[5000:-5000]
-        self.template = signal.filtfilt(b, a, template)[5000:-5000]
+        self.data_y = signal.filtfilt(b, a, x)[5000:-5000:decimate]
+        self.template = signal.filtfilt(b, a, template)[5000:-5000:decimate]
 
         b, a = signal.butter(3, [2. * (noise_freq - bandwidth / 2.) / self.fsamp,
                                  2. * (noise_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
-        self.data_y2 = signal.filtfilt(b, a, x)[5000:-5000]  # x3 data - QPD carrier phase
+        self.data_y2 = signal.filtfilt(b, a, x)[5000:-5000:decimate]  # x3 data - QPD carrier phase
 
         mimuit_minimizer = Minuit(self.log_likelihood_template, **kwargs)
         mimuit_minimizer.migrad(ncall=50000)

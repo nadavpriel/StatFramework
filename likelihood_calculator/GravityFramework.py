@@ -378,11 +378,16 @@ class GravityFramework:
 
         return self.Harmonics_array, m1_tmp
 
-    def get_alpha_mle_pl(self, bdf, center_freq, noise_freq, bandwidth, direction1='x', x_focous=400, frequency=13,
-                     lambda_par=100e-6, height=0e-6, suppress_print=True, **fit_kwargs):
+    def get_alpha_mle_pl(self, bdf, center_freq, noise_freq, bandwidth, decimate=10, direction1='x', x_focous=400,
+                         frequency=13,
+                         lambda_par=100e-6, height=0e-6, suppress_print=True, **fit_kwargs):
         """
          Fit and extract the scale factor for the yukawa force compared to 10^10
          The function is performing the fit using two axes in a correlated way
+         :param lambda_par: lambda parameter for the Yukawa term
+         :param frequency: attractor shaking frequency
+         :param height: attractor height
+         :param decimate: decimate data before the fit
          :param bandwidth: bandpass bandwidth
          :param center_freq: bandpass filter center frequency
          :param noise_freq: noise dataset center frequency
@@ -427,10 +432,11 @@ class GravityFramework:
         # find the mle
         m1_tmp = self.lc_i.find_mle_PL(xx1, np.array(template1) * tmp_scale1,
                                        center_freq=center_freq, noise_freq=noise_freq,
-                                       bandwidth=bandwidth, **fit_kwargs)
+                                       bandwidth=bandwidth, decimate=decimate, **fit_kwargs)
 
         print('***************************************************')
         print('alpha mle: ', '{:.2e}'.format(m1_tmp.values[0]))
+        print('sigma mle: ', '{:.2e}'.format(m1_tmp.values[2]))
         print('reduced chi2: ', m1_tmp.fval / (len(bdf.x2) - 1))
 
         return m1_tmp.values[0], m1_tmp.errors[0], m1_tmp
