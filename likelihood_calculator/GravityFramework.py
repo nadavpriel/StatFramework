@@ -317,7 +317,7 @@ class GravityFramework:
 
         return m1_tmp
 
-    def build_z_response(self, bdf_list, drive_freq, charges):
+    def build_z_response(self, bdf_list, drive_freq, charges, bandwidth):
         """
         Calculates the Z response by fitting sine
         :param bdf_list: list of force calibration BeadDataFiles
@@ -331,7 +331,7 @@ class GravityFramework:
                       'limit_A': [0, 100000],
                       'print_level': 0, 'fix_f': True, 'fix_phi': False}
 
-        m1_tmp = [self.get_z_amplitude(bdf=bdf_, noise_rms=1, **fit_kwargs)[2] for
+        m1_tmp = [self.get_z_amplitude(bdf=bdf_, noise_rms=1, bandwidth=bandwidth, **fit_kwargs)[2] for
                   bdf_ in bdf_list]
 
         force = charges * 1.6e-19 * 20 / 8e-3 * 0.61  # in Newtons
