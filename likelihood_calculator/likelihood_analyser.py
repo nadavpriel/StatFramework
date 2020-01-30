@@ -36,6 +36,7 @@ class LikelihoodAnalyser:
     def least_squares_template(self, alpha, phase):
         """
         least squares for minimization - any given template
+        :param phase: phase of the template
         :param alpha: scale factor
         :return: cost function - sum of squares
         """

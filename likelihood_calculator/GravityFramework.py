@@ -38,6 +38,8 @@ class GravityFramework:
         self.m1_list = None  # last m1 list (last fitting)
         self.last_phase = 0
         self.last_A = 0
+        self.tf_ffts = None
+        self.tf_freq = None
 
     def plot_dataset(self, bdf_i, res=50000):
         """
@@ -341,6 +343,33 @@ class GravityFramework:
         self.m1_list = m1_tmp
 
         return m1_tmp
+
+    def build_transfer_function(self, bdf_xyz, base_freq=7, number_of_harmonics=50, scale_freq=151, plot=False):
+        """
+        Set the transfer function for x, y, and z.
+        :param bdf_xyz: a list of x,y,z bdfs
+        :param base_freq: base frequency of the transfer function measurement
+        :param number_of_harmonics: number of harmonics in the transfer function measurement
+        :param scale_freq: the frequency to scale to 1 (should be the force calibration frequency)
+        :param plot: plot transfer function datasets
+        :return: nothing so far
+        """
+        self.tf_ffts = []
+        axes = ['x', 'y', 'z']
+        freq_tmp, _ = bdf_xyz[0].psd2('x')
+        freqs_tmp = [freq_tmp == base_freq * i for i in range(1, number_of_harmonics + 1)]
+        indices = [i == 1 for i in np.sum(freqs_tmp, axis=0)]
+        self.tf_freq = freq_tmp[indices]
+        for i, bb in enumerate(bdf_xyz):
+            _, fft_tmp = bb.psd2(axes[i])
+            fft_tmp = np.sqrt(fft_tmp)[indices]
+            scale = np.interp(scale_freq, self.tf_freq, fft_tmp)
+            self.tf_ffts += [fft_tmp / scale]
+
+        if plot:
+            _, ax = plt.subplots(1, 2, figsize=(9.5, 4))
+            [ax[0].loglog(self.tf_freq, fft_, '.') for fft_ in self.tf_ffts[:2]]
+            ax[1].loglog(self.tf_freq, self.tf_ffts[2], '.')
 
     def build_harmonics_array(self, freq):
         """
