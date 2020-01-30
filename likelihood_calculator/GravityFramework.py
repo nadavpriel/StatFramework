@@ -219,7 +219,7 @@ class GravityFramework:
         # find the mle
         m1_tmp = self.lc_i.find_mle_template2(xx1, np.array(template1) * tmp_scale1,
                                               xx2, np.array(template2) * tmp_scale2,
-                                              center_freq=center_freq, bandwidth=bandwidth, **fit_kwargs)
+                                              center_freq=center_freq, bandwidth=bandwidth, decimate=decimate, **fit_kwargs)
 
         print('***************************************************')
         print('alpha: ', '{:.2e}'.format(m1_tmp.values[0]))
