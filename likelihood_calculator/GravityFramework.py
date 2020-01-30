@@ -152,10 +152,11 @@ class GravityFramework:
         return m1_tmp.values[0], m1_tmp.errors[0], m1_tmp
 
     def get_alpha_2d(self, bdf, center_freq, bandwidth, direction1='x', direction2='z', x_focous=400, frequency=13,
-                     lambda_par=100e-6, height=0e-6, suppress_print=True, **fit_kwargs):
+                     lambda_par=100e-6, height=0e-6, decimate=10, suppress_print=True, **fit_kwargs):
         """
          Fit and extract the scale factor for the yukawa force compared to 10^10
          The function is performing the fit using two axes in a correlated way
+         :param decimate: decimate data for speedup
          :param bandwidth: bandpass bandwidth
          :param center_freq: bandpass filter center frequency
          :param bdf: bdf dataset to be used
