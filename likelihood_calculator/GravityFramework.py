@@ -322,11 +322,11 @@ class GravityFramework:
         return m1_tmp
 
     def build_z_response(self, bdf_list, drive_freq, charges, bandwidth, decimate = 10,
-                         inlude_sigma=False):
+                         include_sigma=False):
         """
         Calculates the Z response by fitting sine
         :param decimate: decimate data for speedup
-        :param inlude_sigma: include sigma in the fit
+        :param include_sigma: include sigma in the fit
         :param bandwidth: bandwidth for the bandpass filter
         :param bdf_list: list of force calibration BeadDataFiles
         :param drive_freq: the drive frequency on the electrodes
