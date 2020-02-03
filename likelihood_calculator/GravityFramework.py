@@ -86,9 +86,10 @@ class GravityFramework:
 
         return m1_tmp.values[0], m1_tmp.errors[0], m1_tmp
 
-    def get_z_amplitude(self, bdf, noise_rms, bandwidth=1, **fit_kwargs):
+    def get_z_amplitude(self, bdf, noise_rms, bandwidth=1, decimate=10, **fit_kwargs):
         """
         Fit and extract the Z2 amplitude of one harmonic from one particular file
+        :param decimate: decimate the data before fitting
         :param bandwidth: bandpass bandwidth
         :param noise_rms: noise std of Z2 and X3
         :param bdf: bdf dataset to be used
@@ -98,9 +99,9 @@ class GravityFramework:
         frequency = fit_kwargs['f']
 
         xx2 = bb.response_at_freq2('z', frequency, bandwidth=bandwidth)
-        xx2 = xx2[5000:-5000]  # cut out the first and last second
+        xx2 = xx2[5000:-5000:decimate]  # cut out the first and last second
 
-        m1_tmp = self.lc_i.find_mle_sin(xx2, fsamp=self.fsamp,
+        m1_tmp = self.lc_i.find_mle_sin(xx2, fsamp=self.fsamp/decimate,
                                         noise_rms=noise_rms,
                                         plot=False, suppress_print=True, **fit_kwargs)
 
@@ -198,23 +199,23 @@ class GravityFramework:
         # data preparation
         if direction1 == 'x':
             xx1 = bdf.x2 * 50000
-            tmp_scale1 = self.scale_X2*np.interp(center_freq,self.tf_freq,self.tf_ffts[0])
+            tmp_scale1 = self.scale_X2*np.interp(center_freq, self.tf_freq, self.tf_ffts[0])
         elif direction1 == 'x3':
             xx1 = bdf.x3 / 6
-            tmp_scale1 = self.scale_X3*np.interp(center_freq,self.tf_freq,self.tf_ffts[0])
+            tmp_scale1 = self.scale_X3*np.interp(center_freq, self.tf_freq, self.tf_ffts[0])
         elif direction1 == 'z':
             xx1 = bdf.z2
-            tmp_scale1 = self.scale_Z2*np.interp(center_freq,self.tf_freq,self.tf_ffts[2])
+            tmp_scale1 = self.scale_Z2*np.interp(center_freq, self.tf_freq, self.tf_ffts[2])
 
         if direction2 == 'x':
             xx2 = bdf.x2 * 50000
-            tmp_scale2 = self.scale_X2**np.interp(center_freq,self.tf_freq,self.tf_ffts[0])
+            tmp_scale2 = self.scale_X2**np.interp(center_freq, self.tf_freq, self.tf_ffts[0])
         elif direction1 == 'x3':
             xx2 = bdf.x3 / 6
-            tmp_scale2 = self.scale_X3*np.interp(center_freq,self.tf_freq,self.tf_ffts[0])
+            tmp_scale2 = self.scale_X3*np.interp(center_freq, self.tf_freq, self.tf_ffts[0])
         elif direction2 == 'z':
             xx2 = bdf.z2
-            tmp_scale2 = self.scale_Z2*np.interp(center_freq,self.tf_freq,self.tf_ffts[2])
+            tmp_scale2 = self.scale_Z2*np.interp(center_freq, self.tf_freq, self.tf_ffts[2])
 
         # find the mle
         m1_tmp = self.lc_i.find_mle_template2(xx1, np.array(template1) * tmp_scale1,
