@@ -321,9 +321,13 @@ class GravityFramework:
 
         return m1_tmp
 
-    def build_z_response(self, bdf_list, drive_freq, charges, bandwidth):
+    def build_z_response(self, bdf_list, drive_freq, charges, bandwidth, decimate = 10,
+                         inlude_sigma=False):
         """
         Calculates the Z response by fitting sine
+        :param decimate: decimate data for speedup
+        :param inlude_sigma: include sigma in the fit
+        :param bandwidth: bandwidth for the bandpass filter
         :param bdf_list: list of force calibration BeadDataFiles
         :param drive_freq: the drive frequency on the electrodes
         :param charges: charge state on the sphere
@@ -334,8 +338,11 @@ class GravityFramework:
                       'limit_phi': [-2 * np.pi, 2 * np.pi],
                       'limit_A': [0, 100000],
                       'print_level': 0, 'fix_f': True, 'fix_phi': False}
+        if inlude_sigma:
+            fit_kwargs += {'sigma': self.noise_rms_z2, 'sigma_fix': False, 'limit_sigma': [0,None]}
 
-        m1_tmp = [self.get_z_amplitude(bdf=bdf_, noise_rms=1, bandwidth=bandwidth, **fit_kwargs)[2] for
+        m1_tmp = [self.get_z_amplitude(bdf=bdf_, noise_rms=1, bandwidth=bandwidth, decimate=decimate,
+                                       **fit_kwargs)[2] for
                   bdf_ in bdf_list]
 
         force = charges * 1.6e-19 * 20 / 8e-3 * 0.61  # in Newtons

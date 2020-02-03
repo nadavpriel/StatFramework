@@ -118,8 +118,9 @@ class LikelihoodAnalyser:
         """
         func_t = A * np.sin(2 * np.pi * f * self.data_x + phi)  # function to minimize
         res = sum(np.power(np.abs(self.data_y - func_t), 2))
-        res += len(self.data_x) * np.log(np.pi * sigma ** 2)
-        return res / sigma ** 2
+        res /= 2*sigma**2
+        res += len(self.data_x) * np.log(sigma)
+        return res
 
     def find_mle_template(self, x, template, center_freq, bandwidth, **kwargs):
         """
