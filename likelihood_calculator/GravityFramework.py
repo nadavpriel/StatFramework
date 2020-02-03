@@ -341,7 +341,7 @@ class GravityFramework:
                       'print_level': 0, 'fix_f': True, 'fix_phi': False}
         if include_sigma:
             fit_kwargs = {'A': 10, 'f': drive_freq, 'phi': 0,
-                          'error_A': 1, 'error_f': 1, 'error_phi': 0.5, 'errordef': 0.5,
+                          'error_A': 1, 'error_f': 1, 'error_phi': 1, 'errordef': 1,
                           'limit_phi': [-2 * np.pi, 2 * np.pi],
                           'limit_A': [0, 100000],
                           'print_level': 0, 'fix_f': True, 'fix_phi': False,
