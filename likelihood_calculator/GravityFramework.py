@@ -101,7 +101,7 @@ class GravityFramework:
         xx2 = bb.response_at_freq2('z', frequency, bandwidth=bandwidth)
         xx2 = xx2[5000:-5000:decimate]  # cut out the first and last second
 
-        m1_tmp = self.lc_i.find_mle_sin(xx2, fsamp=self.fsamp/decimate,
+        m1_tmp = self.lc_i.find_mle_sin(xx2, fsamp=self.fsamp / decimate,
                                         noise_rms=noise_rms,
                                         plot=False, suppress_print=True, **fit_kwargs)
 
@@ -199,28 +199,29 @@ class GravityFramework:
         # data preparation
         if direction1 == 'x':
             xx1 = bdf.x2 * 50000
-            tmp_scale1 = self.scale_X2*np.interp(center_freq, self.tf_freq, self.tf_ffts[0])
+            tmp_scale1 = self.scale_X2 * np.interp(center_freq, self.tf_freq, self.tf_ffts[0])
         elif direction1 == 'x3':
             xx1 = bdf.x3 / 6
-            tmp_scale1 = self.scale_X3*np.interp(center_freq, self.tf_freq, self.tf_ffts[0])
+            tmp_scale1 = self.scale_X3 * np.interp(center_freq, self.tf_freq, self.tf_ffts[0])
         elif direction1 == 'z':
             xx1 = bdf.z2
-            tmp_scale1 = self.scale_Z2*np.interp(center_freq, self.tf_freq, self.tf_ffts[2])
+            tmp_scale1 = self.scale_Z2 * np.interp(center_freq, self.tf_freq, self.tf_ffts[2])
 
         if direction2 == 'x':
             xx2 = bdf.x2 * 50000
-            tmp_scale2 = self.scale_X2**np.interp(center_freq, self.tf_freq, self.tf_ffts[0])
+            tmp_scale2 = self.scale_X2 ** np.interp(center_freq, self.tf_freq, self.tf_ffts[0])
         elif direction1 == 'x3':
             xx2 = bdf.x3 / 6
-            tmp_scale2 = self.scale_X3*np.interp(center_freq, self.tf_freq, self.tf_ffts[0])
+            tmp_scale2 = self.scale_X3 * np.interp(center_freq, self.tf_freq, self.tf_ffts[0])
         elif direction2 == 'z':
             xx2 = bdf.z2
-            tmp_scale2 = self.scale_Z2*np.interp(center_freq, self.tf_freq, self.tf_ffts[2])
+            tmp_scale2 = self.scale_Z2 * np.interp(center_freq, self.tf_freq, self.tf_ffts[2])
 
         # find the mle
         m1_tmp = self.lc_i.find_mle_template2(xx1, np.array(template1) * tmp_scale1,
                                               xx2, np.array(template2) * tmp_scale2,
-                                              center_freq=center_freq, bandwidth=bandwidth, decimate=decimate, **fit_kwargs)
+                                              center_freq=center_freq, bandwidth=bandwidth, decimate=decimate,
+                                              **fit_kwargs)
 
         print('***************************************************')
         print('alpha: ', '{:.2e}'.format(m1_tmp.values[0]))
@@ -321,7 +322,7 @@ class GravityFramework:
 
         return m1_tmp
 
-    def build_z_response(self, bdf_list, drive_freq, charges, bandwidth, decimate = 10,
+    def build_z_response(self, bdf_list, drive_freq, charges, bandwidth, decimate=10,
                          include_sigma=False):
         """
         Calculates the Z response by fitting sine
@@ -339,7 +340,12 @@ class GravityFramework:
                       'limit_A': [0, 100000],
                       'print_level': 0, 'fix_f': True, 'fix_phi': False}
         if include_sigma:
-            fit_kwargs{'sigma': self.noise_rms_z2, 'sigma_fix': False, 'limit_sigma': [0,None]}
+            fit_kwargs = {'A': 10, 'f': drive_freq, 'phi': 0,
+                          'error_A': 1, 'error_f': 1, 'error_phi': 0.5, 'errordef': 1,
+                          'limit_phi': [-2 * np.pi, 2 * np.pi],
+                          'limit_A': [0, 100000],
+                          'print_level': 0, 'fix_f': True, 'fix_phi': False,
+                          'sigma': self.noise_rms_z2, 'sigma_fix': False, 'limit_sigma': [0, None]}
 
         m1_tmp = [self.get_z_amplitude(bdf=bdf_, noise_rms=1, bandwidth=bandwidth, decimate=decimate,
                                        **fit_kwargs)[2] for
