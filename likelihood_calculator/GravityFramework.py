@@ -339,7 +339,7 @@ class GravityFramework:
                       'limit_A': [0, 100000],
                       'print_level': 0, 'fix_f': True, 'fix_phi': False}
         if include_sigma:
-            fit_kwargs += {'sigma': self.noise_rms_z2, 'sigma_fix': False, 'limit_sigma': [0,None]}
+            fit_kwargs{'sigma': self.noise_rms_z2, 'sigma_fix': False, 'limit_sigma': [0,None]}
 
         m1_tmp = [self.get_z_amplitude(bdf=bdf_, noise_rms=1, bandwidth=bandwidth, decimate=decimate,
                                        **fit_kwargs)[2] for
