@@ -343,7 +343,7 @@ class GravityFramework:
             fit_kwargs = {'A': 10, 'f': drive_freq, 'phi': 0,
                           'error_A': 1, 'error_f': 1, 'error_phi': 1, 'errordef': 0.5,
                           'limit_phi': [-2 * np.pi, 2 * np.pi],
-                          'limit_A': [0, 100000],
+                          'limit_A': [-10000, 100000],
                           'print_level': 0, 'fix_f': True, 'fix_phi': False,
                           'sigma': self.noise_rms_z2, 'fix_sigma': False, 'limit_sigma': [0, None]}
 
