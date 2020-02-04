@@ -344,7 +344,7 @@ class GravityFramework:
                           'error_A': 1, 'error_f': 1, 'error_phi': 1, 'errordef': 1,
                           'limit_phi': [-2 * np.pi, 2 * np.pi],
                           'limit_A': [-10000, 100000],
-                          'print_level': 0, 'fix_f': True, 'fix_phi': False, 'fix_A': False,
+                          'print_level': 0, 'fix_f': True, 'fix_phi': False, 'fix_A': True,
                           'sigma': self.noise_rms_z2, 'fix_sigma': False, 'limit_sigma': [0, None]}
 
         m1_tmp = [self.get_z_amplitude(bdf=bdf_, noise_rms=1, bandwidth=bandwidth, decimate=decimate,
