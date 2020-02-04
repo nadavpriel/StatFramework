@@ -470,6 +470,7 @@ class GravityFramework:
             xx1 = bdf.x3 / 6
             tmp_scale1 = self.scale_X3 * np.interp(center_freq, self.tf_freq, self.tf_ffts[0])
         elif direction1 == 'z':
+            print('z axis')
             xx1 = bdf.z2
             tmp_scale1 = self.scale_Z2 * np.interp(center_freq, self.tf_freq, self.tf_ffts[2])
 
