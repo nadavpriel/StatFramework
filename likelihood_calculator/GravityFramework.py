@@ -475,7 +475,7 @@ class GravityFramework:
 
         print(tmp_scale1, self.scale_Z2)
         print(np.mean(template1)*tmp_scale1)
-        print(np.std(bdf.response_at_ferq2('z', 20, bandwidth)))
+        print(np.std(bdf.response_at_freq2('z', 20, bandwidth)))
         _, ax = plt.subplots()
         ax.scatter(range(1000), template1[:1000]*tmp_scale1-np.mean(template1[:1000]*tmp_scale1))
         # find the mle
