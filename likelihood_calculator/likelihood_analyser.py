@@ -156,9 +156,9 @@ class LikelihoodAnalyser:
         :return: minimizer result
         """
 
-        _, ax = plt.subplots()
-        ax.scatter(range(5000), x[:5000]-np.mean(x[:5000]))
-        ax.scatter(range(5000), template[:5000]*scale-np.mean(template[:5000]*scale))
+        # _, ax = plt.subplots()
+        # ax.scatter(range(5000), x[:5000]-np.mean(x[:5000]))
+        # ax.scatter(range(5000), template[:5000]*scale-np.mean(template[:5000]*scale))
 
         # filtering the template and the data
         b, a = signal.butter(3, [2. * (center_freq - bandwidth / 2.) / self.fsamp,
@@ -170,11 +170,11 @@ class LikelihoodAnalyser:
                                  2. * (noise_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
         self.data_y2 = signal.filtfilt(b, a, x)[5000:-5000:decimate]  # x3 data - QPD carrier phase
 
-        _,ax = plt.subplots()
-        ax.scatter(range(5000), self.data_y[:5000])
-        ax.scatter(range(5000), self.data_y2[:5000])
-        ax.scatter(range(5000), self.template[:5000])
-        print(np.std(self.data_y[5000:-5000]), self.data_y.shape)
+        # _,ax = plt.subplots()
+        # ax.scatter(range(5000), self.data_y[:5000])
+        # ax.scatter(range(5000), self.data_y2[:5000])
+        # ax.scatter(range(5000), self.template[:5000])
+        # print(np.std(self.data_y[5000:-5000]), self.data_y.shape)
 
         mimuit_minimizer = Minuit(self.log_likelihood_template, **kwargs)
         mimuit_minimizer.migrad(ncall=50000)
