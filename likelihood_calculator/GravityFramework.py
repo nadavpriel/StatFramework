@@ -100,7 +100,7 @@ class GravityFramework:
 
         xx2 = bb.response_at_freq2('z', frequency, bandwidth=bandwidth)
         xx2 = xx2[5000:-5000:decimate]  # cut out the first and last second
-        print(np.std(xx2))
+
         m1_tmp = self.lc_i.find_mle_sin(xx2, fsamp=self.fsamp / decimate,
                                         noise_rms=noise_rms,
                                         plot=False, suppress_print=True, **fit_kwargs)

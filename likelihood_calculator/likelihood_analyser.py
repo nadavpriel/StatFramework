@@ -32,6 +32,7 @@ class LikelihoodAnalyser:
         res /= sigma**2
         # res += sum(np.power(np.abs(self.data_y2), 2))/sigma**2
         res += 2*len(self.data_y)*np.log(sigma)
+        print(res, sigma)
         return res
 
     def least_squares_template(self, alpha, phase):
@@ -121,6 +122,8 @@ class LikelihoodAnalyser:
         res = sum(np.power(np.abs(self.data_y - func_t), 2))
         res /= sigma**2
         res += 2*len(self.data_x) * np.log(sigma)
+        print(res, sigma)
+
         return res
 
     def find_mle_template(self, x, template, center_freq, bandwidth, **kwargs):
@@ -155,11 +158,6 @@ class LikelihoodAnalyser:
         :param x: 1 dim. position data (time domain)
         :return: minimizer result
         """
-
-        # _, ax = plt.subplots()
-        # ax.scatter(range(5000), x[:5000]-np.mean(x[:5000]))
-        # ax.scatter(range(5000), template[:5000]*scale-np.mean(template[:5000]*scale))
-
         # filtering the template and the data
         b, a = signal.butter(3, [2. * (center_freq - bandwidth / 2.) / self.fsamp,
                                  2. * (center_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
@@ -169,12 +167,6 @@ class LikelihoodAnalyser:
         b, a = signal.butter(3, [2. * (noise_freq - bandwidth / 2.) / self.fsamp,
                                  2. * (noise_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
         self.data_y2 = signal.filtfilt(b, a, x)[5000:-5000:decimate]  # x3 data - QPD carrier phase
-
-        # _,ax = plt.subplots()
-        # ax.scatter(range(5000), self.data_y[:5000])
-        # ax.scatter(range(5000), self.data_y2[:5000])
-        # ax.scatter(range(5000), self.template[:5000])
-        # print(np.std(self.data_y[5000:-5000]), self.data_y.shape)
 
         mimuit_minimizer = Minuit(self.log_likelihood_template, **kwargs)
         mimuit_minimizer.migrad(ncall=50000)
