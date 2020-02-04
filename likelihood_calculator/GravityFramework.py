@@ -470,13 +470,8 @@ class GravityFramework:
             xx1 = bdf.x3 / 6
             tmp_scale1 = self.scale_X3 * np.interp(center_freq, self.tf_freq, self.tf_ffts[0])
         elif direction1 == 'z':
-            print('z axis')
             xx1 = bdf.z2
             tmp_scale1 = self.scale_Z2 * np.interp(center_freq, self.tf_freq, self.tf_ffts[2])
-
-        print(tmp_scale1, self.scale_Z2)
-        print(np.mean(template1)*tmp_scale1)
-        print(np.std(bdf.response_at_freq2('z', 20, bandwidth)[5000:-5000]))
 
         # find the mle
         m1_tmp = self.lc_i.find_mle_PL(xx1, np.array(template1), tmp_scale1,
