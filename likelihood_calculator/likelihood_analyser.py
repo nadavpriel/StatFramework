@@ -155,6 +155,11 @@ class LikelihoodAnalyser:
         :param x: 1 dim. position data (time domain)
         :return: minimizer result
         """
+
+        _, ax = plt.subplots()
+        ax.scatter(range(1000), x[:1000])
+        ax.scatter(range(1000), template[:1000])
+
         # filtering the template and the data
         b, a = signal.butter(3, [2. * (center_freq - bandwidth / 2.) / self.fsamp,
                                  2. * (center_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
