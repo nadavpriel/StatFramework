@@ -478,13 +478,6 @@ class GravityFramework:
         print(np.mean(template1)*tmp_scale1)
         print(np.std(bdf.response_at_freq2('z', 20, bandwidth)[5000:-5000]))
 
-        b, a = signal.butter(3, [2. * (20 - bandwidth / 2.) / self.fsamp,
-                                 2. * (20 + bandwidth / 2.) / self.fsamp], btype='bandpass')
-        print(b, a, bandwidth, self.fsamp)
-        tmp_y = signal.filtfilt(b, a, xx1)[5000:-5000]
-        print(np.std(xx1), np.std(tmp_y), np.std(tmp_y[::decimate]))
-        # _, ax = plt.subplots()
-        # ax.scatter(range(1000), template1[:1000]*tmp_scale1-np.mean(template1[:1000]*tmp_scale1))
         # find the mle
         m1_tmp = self.lc_i.find_mle_PL(xx1, np.array(template1), tmp_scale1,
                                        center_freq=center_freq, noise_freq=noise_freq,

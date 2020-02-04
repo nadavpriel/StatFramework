@@ -29,8 +29,6 @@ class LikelihoodAnalyser:
         func_t = np.roll(func_t, int(phase))
 
         res = sum(np.power(np.abs(self.data_y - func_t), 2))
-        print(res, sigma, len(self.data_y), alpha)
-
         res /= sigma**2
         # res += sum(np.power(np.abs(self.data_y2), 2))/sigma**2
         res += 2*len(self.data_y)*np.log(sigma)
@@ -121,8 +119,6 @@ class LikelihoodAnalyser:
         """
         func_t = A * np.sin(2 * np.pi * f * self.data_x + phi)  # function to minimize
         res = sum(np.power(np.abs(self.data_y - func_t), 2))
-        print(res, sigma, len(self.data_x), A)
-
         res /= sigma**2
         res += 2*len(self.data_x) * np.log(sigma)
 
@@ -161,15 +157,9 @@ class LikelihoodAnalyser:
         :return: minimizer result
         """
         # filtering the template and the data
-        # b, a = signal.butter(3, [2. * (center_freq - bandwidth / 2.) / self.fsamp,
-        #                          2. * (center_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
-        b, a = signal.butter(3, [2. * (20 - bandwidth / 2.) / self.fsamp,
-                                 2. * (20 + bandwidth / 2.) / self.fsamp], btype='bandpass')
-        print(b, a, bandwidth, self.fsamp)
+        b, a = signal.butter(3, [2. * (center_freq - bandwidth / 2.) / self.fsamp,
+                                 2. * (center_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
         self.data_y = signal.filtfilt(b, a, x)[5000:-5000:decimate]
-        print(np.std(self.data_y))
-        tmp_y = signal.filtfilt(b, a, x)[5000:-5000]
-        print(np.std(x), np.std(tmp_y), np.std(tmp_y[::decimate]))
         self.template = signal.filtfilt(b, a, template)[5000:-5000:decimate]*scale
 
         b, a = signal.butter(3, [2. * (noise_freq - bandwidth / 2.) / self.fsamp,
