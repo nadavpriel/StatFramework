@@ -460,9 +460,7 @@ class GravityFramework:
         template1 = force_vs_time(separation=separation * 1e-6, height=height, stroke=stroke * 1e-6,
                                   frequency=frequency,
                                   direction=direction_tmp, lambda_par=lambda_par, yuk_or_grav="yuk", alpha=1e10)
-        template1 = list(template1[1]) * int(time_sec)
-
-
+        template1 = np.array(list(template1[1]) * int(time_sec))
 
         # data preparation
         if direction1 == 'x':
