@@ -157,8 +157,8 @@ class LikelihoodAnalyser:
         """
 
         _, ax = plt.subplots()
-        ax.scatter(range(1000), x[:1000])
-        ax.scatter(range(1000), template[:1000])
+        ax.scatter(range(1000), x[:1000]-np.mean(x[:1000]))
+        ax.scatter(range(1000), template[:1000]*scale-np.mean(template[:1000]*scale))
 
         # filtering the template and the data
         b, a = signal.butter(3, [2. * (center_freq - bandwidth / 2.) / self.fsamp,
@@ -172,8 +172,7 @@ class LikelihoodAnalyser:
 
         _,ax = plt.subplots()
         ax.scatter(range(1000), self.data_y[:1000])
-        ax.scatter(range(1000), self.template[:1000])
-
+        ax.scatter(range(1000), self.template[:1000]*scale)
 
         mimuit_minimizer = Minuit(self.log_likelihood_template, **kwargs)
         mimuit_minimizer.migrad(ncall=50000)
