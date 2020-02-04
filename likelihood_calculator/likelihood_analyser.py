@@ -164,6 +164,7 @@ class LikelihoodAnalyser:
         b, a = signal.butter(3, [2. * (center_freq - bandwidth / 2.) / self.fsamp,
                                  2. * (center_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
         self.data_y = signal.filtfilt(b, a, x)[5000:-5000:decimate]
+        print(np.std(self.data_y))
         self.template = signal.filtfilt(b, a, template)[5000:-5000:decimate]*scale
 
         b, a = signal.butter(3, [2. * (noise_freq - bandwidth / 2.) / self.fsamp,
@@ -233,7 +234,7 @@ class LikelihoodAnalyser:
         end = time.time()
         if not suppress_print:
             print('bandpass time: ', end - start)
-
+        print(np.std(self.data_y))
         # we create an instance of Minuit and pass the function to minimize
         if bimodal:
             mimuit_minimizer = Minuit(self.least_squares_bimodal_sine, **kwargs)
