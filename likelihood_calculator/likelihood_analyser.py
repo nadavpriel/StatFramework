@@ -229,7 +229,7 @@ class LikelihoodAnalyser:
         end = time.time()
         if not suppress_print:
             print('bandpass time: ', end - start)
-        print(np.std(self.data_y))
+
         # we create an instance of Minuit and pass the function to minimize
         if bimodal:
             mimuit_minimizer = Minuit(self.least_squares_bimodal_sine, **kwargs)
