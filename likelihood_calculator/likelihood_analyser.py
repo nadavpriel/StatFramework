@@ -173,7 +173,7 @@ class LikelihoodAnalyser:
         _,ax = plt.subplots()
         ax.scatter(range(1000), self.data_y[:1000])
         ax.scatter(range(1000), self.template[:1000])
-        print(np.std(self.data_y[5000:-5000]))
+        print(np.std(self.data_y[5000:-5000]), self.data_y.shape)
 
         mimuit_minimizer = Minuit(self.log_likelihood_template, **kwargs)
         mimuit_minimizer.migrad(ncall=50000)
