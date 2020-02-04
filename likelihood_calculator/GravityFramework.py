@@ -465,13 +465,13 @@ class GravityFramework:
         # data preparation
         if direction1 == 'x':
             xx1 = bdf.x2 * 50000
-            tmp_scale1 = self.scale_X2
+            tmp_scale1 = self.scale_X2 * np.interp(center_freq, self.tf_freq, self.tf_ffts[0])
         elif direction1 == 'x3':
             xx1 = bdf.x3 / 6
-            tmp_scale1 = self.scale_X3
+            tmp_scale1 = self.scale_X3 * np.interp(center_freq, self.tf_freq, self.tf_ffts[0])
         elif direction1 == 'z':
             xx1 = bdf.z2
-            tmp_scale1 = self.scale_Z2
+            tmp_scale1 = self.scale_Z2 * np.interp(center_freq, self.tf_freq, self.tf_ffts[2])
 
         # find the mle
         m1_tmp = self.lc_i.find_mle_PL(xx1, np.array(template1) * tmp_scale1,
