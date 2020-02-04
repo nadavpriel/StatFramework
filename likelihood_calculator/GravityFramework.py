@@ -462,9 +462,7 @@ class GravityFramework:
                                   direction=direction_tmp, lambda_par=lambda_par, yuk_or_grav="yuk", alpha=1e10)
         template1 = list(template1[1]) * int(time_sec)
 
-        print(np.mean(template1))
-        _, ax = plt.subplots()
-        ax.semilogy(range(1000), template1[:1000])
+
 
         # data preparation
         if direction1 == 'x':
@@ -477,6 +475,9 @@ class GravityFramework:
             xx1 = bdf.z2
             tmp_scale1 = self.scale_Z2 * np.interp(center_freq, self.tf_freq, self.tf_ffts[2])
 
+        print(np.mean(template1)*tmp_scale1)
+        _, ax = plt.subplots()
+        ax.semilogy(range(1000), template1[:1000]*tmp_scale1)
         # find the mle
         m1_tmp = self.lc_i.find_mle_PL(xx1, np.array(template1), tmp_scale1,
                                        center_freq=center_freq, noise_freq=noise_freq,
