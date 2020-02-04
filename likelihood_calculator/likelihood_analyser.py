@@ -161,8 +161,10 @@ class LikelihoodAnalyser:
         :return: minimizer result
         """
         # filtering the template and the data
-        b, a = signal.butter(3, [2. * (center_freq - bandwidth / 2.) / self.fsamp,
-                                 2. * (center_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
+        # b, a = signal.butter(3, [2. * (center_freq - bandwidth / 2.) / self.fsamp,
+        #                          2. * (center_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
+        b, a = signal.butter(3, [2. * (20 - bandwidth / 2.) / self.fsamp,
+                                 2. * (20 + bandwidth / 2.) / self.fsamp], btype='bandpass')
         self.data_y = signal.filtfilt(b, a, x)[5000:-5000:decimate]
         print(np.std(self.data_y))
         tmp_y = signal.filtfilt(b, a, x)[5000:-5000]
