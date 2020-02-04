@@ -10,7 +10,7 @@ class LikelihoodAnalyser:
         self.data_x = 0  # x-data to fit
         self.data_y = 0  # y-data to fit
         self.data_y2 = 0  # second y-data to fit
-        self.fsamp = 0  # sampling rate
+        self.fsamp = 5000  # sampling rate
         self.noise_sigma = 1  # gaussian white noise std
         self.noise_sigma2 = 1  # gaussian white noise std
 
