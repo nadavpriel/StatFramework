@@ -29,9 +29,10 @@ class LikelihoodAnalyser:
         func_t = np.roll(func_t, int(phase))
 
         res = sum(np.power(np.abs(self.data_y - func_t), 2))
-        res2 = sum(np.power(np.abs(self.data_y2), 2))
-
-        return (res2)/sigma**2+2*len(self.data_y)*np.log(sigma)
+        res /= sigma**2
+        res += sum(np.power(np.abs(self.data_y2), 2))/sigma**2
+        res += len(self.data_y)*np.log(sigma)
+        return res
 
     def least_squares_template(self, alpha, phase):
         """
