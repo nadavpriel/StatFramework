@@ -473,7 +473,7 @@ class GravityFramework:
             xx1 = bdf.z2
             tmp_scale1 = self.scale_Z2 * np.interp(center_freq, self.tf_freq, self.tf_ffts[2])
 
-        print(tmp_scale1)
+        print(tmp_scale1, self.scale_Z2)
         print(np.mean(template1)*tmp_scale1)
         _, ax = plt.subplots()
         ax.scatter(range(1000), template1[:1000]*tmp_scale1)
