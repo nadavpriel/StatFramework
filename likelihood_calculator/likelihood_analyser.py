@@ -165,7 +165,7 @@ class LikelihoodAnalyser:
         #                          2. * (center_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
         b, a = signal.butter(3, [2. * (20 - bandwidth / 2.) / self.fsamp,
                                  2. * (20 + bandwidth / 2.) / self.fsamp], btype='bandpass')
-        print(b,a)
+        print(b, a, bandwidth, self.fsamp)
         self.data_y = signal.filtfilt(b, a, x)[5000:-5000:decimate]
         print(np.std(self.data_y))
         tmp_y = signal.filtfilt(b, a, x)[5000:-5000]
