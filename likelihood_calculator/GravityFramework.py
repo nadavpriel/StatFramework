@@ -462,6 +462,9 @@ class GravityFramework:
                                   direction=direction_tmp, lambda_par=lambda_par, yuk_or_grav="yuk", alpha=1e10)
         template1 = list(template1[1]) * int(time_sec)
 
+        _,ax = plt.subplots()
+        ax.scatter(range(1000), template1[:1000])
+
         # data preparation
         if direction1 == 'x':
             xx1 = bdf.x2 * 50000
