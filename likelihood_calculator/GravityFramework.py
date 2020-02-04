@@ -481,7 +481,7 @@ class GravityFramework:
         b, a = signal.butter(3, [2. * (20 - bandwidth / 2.) / self.fsamp,
                                  2. * (20 + bandwidth / 2.) / self.fsamp], btype='bandpass')
         tmp_y = signal.filtfilt(b, a, xx1)[5000:-5000]
-        print(np.std(tmp_y), np.std(tmp_y[::decimate]))
+        print(np.std(xx1), np.std(tmp_y), np.std(tmp_y[::decimate]))
         # _, ax = plt.subplots()
         # ax.scatter(range(1000), template1[:1000]*tmp_scale1-np.mean(template1[:1000]*tmp_scale1))
         # find the mle
