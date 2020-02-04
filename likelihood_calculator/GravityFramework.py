@@ -100,7 +100,7 @@ class GravityFramework:
 
         xx2 = bb.response_at_freq2('z', frequency, bandwidth=bandwidth)
         xx2 = xx2[5000:-5000:decimate]  # cut out the first and last second
-
+        print(np.std(xx2))
         m1_tmp = self.lc_i.find_mle_sin(xx2, fsamp=self.fsamp / decimate,
                                         noise_rms=noise_rms,
                                         plot=False, suppress_print=True, **fit_kwargs)
@@ -287,7 +287,7 @@ class GravityFramework:
             self.noise_list_z2.append(np.std(xx2[5000:-5000]))
 
         self.noise_rms_z2 = np.mean(self.noise_list_z2)
-        print('z2 noise rms: ', self.noise_rms_z2)
+        print('z2 noise level: ', self.noise_rms_z2, ' std: ', np.std(self.noise_list_z2))
 
     def build_x_response(self, bdf_list, drive_freq, charges):
         """
