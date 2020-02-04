@@ -143,7 +143,7 @@ class LikelihoodAnalyser:
         mimuit_minimizer.migrad(ncall=50000)
         return mimuit_minimizer
 
-    def find_mle_PL(self, x, template, center_freq, noise_freq, bandwidth, decimate=10, **kwargs):
+    def find_mle_PL(self, x, template, scale, center_freq, noise_freq, bandwidth, decimate=10, **kwargs):
         """
         The function is fitting the data with a template using iminuit and the likelihood function
         The fitting is done after applying a bandpass filter to both the template and the data.
@@ -159,7 +159,7 @@ class LikelihoodAnalyser:
         b, a = signal.butter(3, [2. * (center_freq - bandwidth / 2.) / self.fsamp,
                                  2. * (center_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
         self.data_y = signal.filtfilt(b, a, x)[5000:-5000:decimate]
-        self.template = signal.filtfilt(b, a, template)[5000:-5000:decimate]
+        self.template = signal.filtfilt(b, a, template)[5000:-5000:decimate]*scale
 
         b, a = signal.butter(3, [2. * (noise_freq - bandwidth / 2.) / self.fsamp,
                                  2. * (noise_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')

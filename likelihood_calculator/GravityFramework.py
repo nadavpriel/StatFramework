@@ -474,7 +474,7 @@ class GravityFramework:
             tmp_scale1 = self.scale_Z2 * np.interp(center_freq, self.tf_freq, self.tf_ffts[2])
 
         # find the mle
-        m1_tmp = self.lc_i.find_mle_PL(xx1, np.array(template1) * tmp_scale1,
+        m1_tmp = self.lc_i.find_mle_PL(xx1, np.array(template1), tmp_scale1,
                                        center_freq=center_freq, noise_freq=noise_freq,
                                        bandwidth=bandwidth, decimate=decimate, **fit_kwargs)
 
