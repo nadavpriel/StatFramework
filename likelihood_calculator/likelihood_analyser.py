@@ -166,8 +166,9 @@ class LikelihoodAnalyser:
         self.data_y2 = signal.filtfilt(b, a, x)[5000:-5000:decimate]  # x3 data - QPD carrier phase
 
         _,ax = plt.subplots()
-        ax.scatter(range(1000), self.data_y)
-        ax.scatter(range(1000), self.template)
+        ax.scatter(range(1000), self.data_y[:1000])
+        ax.scatter(range(1000), self.template[:1000])
+
 
         mimuit_minimizer = Minuit(self.log_likelihood_template, **kwargs)
         mimuit_minimizer.migrad(ncall=50000)
