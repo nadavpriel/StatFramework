@@ -32,7 +32,7 @@ class LikelihoodAnalyser:
         res /= sigma**2
         # res += sum(np.power(np.abs(self.data_y2), 2))/sigma**2
         res += 2*len(self.data_y)*np.log(sigma)
-        print(res, sigma)
+        print(res, sigma, len(self.data_y))
         return res
 
     def least_squares_template(self, alpha, phase):
@@ -122,7 +122,7 @@ class LikelihoodAnalyser:
         res = sum(np.power(np.abs(self.data_y - func_t), 2))
         res /= sigma**2
         res += 2*len(self.data_x) * np.log(sigma)
-        print(res, sigma)
+        print(res, sigma, len(self.data_x))
 
         return res
 
