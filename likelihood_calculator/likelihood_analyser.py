@@ -277,7 +277,7 @@ class LikelihoodAnalyser:
         """
         if not suppress_print:
             print('Data overall time: ', len(x) / fsamp, ' sec.')
-        self.fsamp = fsamp
+
         if noise_rms != 0:
             self.noise_sigma = noise_rms
             self.noise_sigma2 = noise_rms2
@@ -288,8 +288,8 @@ class LikelihoodAnalyser:
         if drive_freq != 0:
             if not suppress_print:
                 print('Bandpass filter ON. Bandwidth: ', bandwidth, 'Hz')
-            b, a = signal.butter(3, [2. * (drive_freq - bandwidth / 2.) / self.fsamp,
-                                     2. * (drive_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
+            b, a = signal.butter(3, [2. * (drive_freq - bandwidth / 2.) / fsamp,
+                                     2. * (drive_freq + bandwidth / 2.) / fsamp], btype='bandpass')
             self.data_y = signal.filtfilt(b, a, x)
             self.data_y2 = signal.filtfilt(b, a, x2)
         else:

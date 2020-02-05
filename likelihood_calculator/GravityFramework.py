@@ -58,7 +58,7 @@ class GravityFramework:
 
         plt.show()
 
-    def get_amplitude(self, bdf, noise_rms, noise_rms2, bandwidth=1, **fit_kwargs):
+    def get_amplitude(self, bdf, noise_rms, noise_rms2, bandwidth=1, decimate=10, **fit_kwargs):
         """
         Fit and extract the amplitude of one harmonic from one particular file
         :param bandwidth: bandpass bandwidth
@@ -70,12 +70,12 @@ class GravityFramework:
         frequency = fit_kwargs['f']
 
         xx2 = bb.response_at_freq2('x', frequency, bandwidth=bandwidth) * 50000
-        xx2 = xx2[5000:-5000]  # cut out the first and last second
+        xx2 = xx2[5000:-5000:decimate]  # cut out the first and last second
 
         xx3 = bb.response_at_freq3('x', frequency, bandwidth=bandwidth) / 6
-        xx3 = xx3[5000:-5000]  # cut out the first and last second
+        xx3 = xx3[5000:-5000:decimate]  # cut out the first and last second
 
-        m1_tmp = self.lc_i.find_mle_2sin(xx2, xx3, fsamp=self.fsamp,
+        m1_tmp = self.lc_i.find_mle_2sin(xx2, xx3, fsamp=self.fsamp/decimate,
                                          noise_rms=noise_rms,
                                          noise_rms2=noise_rms2,
                                          plot=False, suppress_print=True, **fit_kwargs)
@@ -289,7 +289,7 @@ class GravityFramework:
         self.noise_rms_z2 = np.mean(self.noise_list_z2)
         print('z2 noise level: ', self.noise_rms_z2, ' std: ', np.std(self.noise_list_z2))
 
-    def build_x_response(self, bdf_list, drive_freq, charges):
+    def build_x_response(self, bdf_list, drive_freq, charges, bandwidth, decimate=10):
         """
         Calculates the X response by fitting X2 and X3 simultaneously
         :param bdf_list: list of force calibration BeadDataFiles
@@ -306,7 +306,7 @@ class GravityFramework:
                       'print_level': 0, 'fix_f': True, 'fix_phi': False, 'fix_f2': True, 'fix_delta_phi': True,
                       'fix_A2': False}
 
-        m1_tmp = [self.get_amplitude(bdf=bdf_, noise_rms=1, noise_rms2=1, **fit_kwargs)[2] for
+        m1_tmp = [self.get_amplitude(bdf=bdf_, noise_rms=1, noise_rms2=1, bandwidth=bandwidth, **fit_kwargs)[2] for
                   bdf_ in bdf_list]
 
         force = charges * 1.6e-19 * 20 / 8e-3 * 0.61  # in Newtons
