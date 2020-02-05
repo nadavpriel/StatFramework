@@ -166,12 +166,12 @@ class GravityFramework:
          :return: amplitude, error
          """
         # temporally overriding the stroke and separation parameters - for sensitivity estimation purposes
-        # stroke = np.std(bdf.cant_pos[1] * 50) * np.sqrt(2) * 2  # stroke in y in micrometers
-        # cant_pos_x = np.mean(bdf.cant_pos[0])  # cantilever position in x for distance to sphere - in micrometers
-        # separation = x_focous - aux.voltage_to_position(cant_pos_x) - 4.8 / 2
-        time_sec = len(bdf.x2) / self.fsamp
-        stroke = 100  # in microns
-        separation = 6.5  # in microns
+        stroke = np.std(bdf.cant_pos[1] * 50) * np.sqrt(2) * 2  # stroke in y in micrometers
+        cant_pos_x = np.mean(bdf.cant_pos[0])  # cantilever position in x for distance to sphere - in micrometers
+        separation = x_focous - aux.voltage_to_position(cant_pos_x) - 4.8 / 2
+        # time_sec = len(bdf.x2) / self.fsamp
+        # stroke = 100  # in microns
+        # separation = 6.5  # in microns
 
         if not suppress_print:
             print('Separation (face to face): ', separation)
