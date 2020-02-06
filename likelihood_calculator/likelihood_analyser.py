@@ -31,7 +31,7 @@ class LikelihoodAnalyser:
         res = sum(np.power(np.abs(self.data_y - func_t), 2))/sigma**2
         res += sum(np.power(np.abs(self.data_y2), 2))/sigma**2
         res += 4*len(self.data_y)*np.log(sigma)
-        print(alpha, sigma, phase, res, sum(np.power(np.abs(self.data_y - func_t), 2)))
+
         return res
 
     def least_squares_template(self, alpha, phase):
@@ -165,10 +165,6 @@ class LikelihoodAnalyser:
         b, a = signal.butter(3, [2. * (noise_freq - bandwidth / 2.) / self.fsamp,
                                  2. * (noise_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
         self.data_y2 = signal.filtfilt(b, a, x)[5000:-5000:decimate]  # x3 data - QPD carrier phase
-
-        _,ax = plt.subplots()
-        ax.scatter(range(1000), self.data_y[:1000])
-        ax.scatter(range(1000), template[:1000])
 
         mimuit_minimizer = Minuit(self.log_likelihood_template, **kwargs)
         mimuit_minimizer.migrad(ncall=50000)
