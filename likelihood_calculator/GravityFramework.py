@@ -348,8 +348,7 @@ class GravityFramework:
                           'sigma': self.noise_rms_z2, 'fix_sigma': False, 'limit_sigma': [0, None]}
 
         m1_tmp = [self.get_z_amplitude(bdf=bdf_, noise_rms=1, bandwidth=bandwidth, decimate=decimate,
-                                       **fit_kwargs)[2] for
-                  bdf_ in bdf_list]
+                                       **fit_kwargs)[2] for bdf_ in bdf_list]
 
         force = charges * 1.6e-19 * 20 / 8e-3 * 0.61  # in Newtons
         A_mean = np.mean([m1.values[0] for m1 in m1_tmp])
@@ -423,11 +422,12 @@ class GravityFramework:
         return self.Harmonics_array, m1_tmp
 
     def get_alpha_mle_pl(self, bdf, center_freq, noise_freq, bandwidth, decimate=10, direction1='x', x_focous=400,
-                         frequency=13,
+                         frequency=13, offset_y=0,
                          lambda_par=100e-6, height=0e-6, suppress_print=True, **fit_kwargs):
         """
          Fit and extract the scale factor for the yukawa force compared to 10^10
          The function is performing the fit using two axes in a correlated way
+         :param offset_y: y offset of the attractor
          :param lambda_par: lambda parameter for the Yukawa term
          :param frequency: attractor shaking frequency
          :param height: attractor height
@@ -459,7 +459,8 @@ class GravityFramework:
             direction_tmp = direction1
         template1 = force_vs_time(separation=separation * 1e-6, height=height, stroke=stroke * 1e-6,
                                   frequency=frequency,
-                                  direction=direction_tmp, lambda_par=lambda_par, yuk_or_grav="yuk", alpha=1e10)
+                                  direction=direction_tmp, lambda_par=lambda_par, offset_y=offset_y,
+                                  yuk_or_grav="yuk", alpha=1e10)
         template1 = np.array(list(template1[1]) * int(time_sec))
 
         # data preparation
