@@ -167,7 +167,7 @@ class LikelihoodAnalyser:
         self.data_y2 = signal.filtfilt(b, a, x)[5000:-5000:decimate]  # x3 data - QPD carrier phase
 
         fft_tmp = np.abs(np.fft.rfft(self.data_y/scale, norm='ortho'))
-        freq_tmp = np.fft.rfftfreq(len(self.data_y), d=1. / 5000)
+        freq_tmp = np.fft.rfftfreq(len(self.data_y), d=1. / 500)
         print(fft_tmp[freq_tmp == center_freq])
         fft_tmp2 = np.abs(np.fft.rfft(self.template, norm='ortho'))
         print(fft_tmp2[freq_tmp == center_freq])
