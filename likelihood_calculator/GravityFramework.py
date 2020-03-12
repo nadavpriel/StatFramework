@@ -493,7 +493,7 @@ class GravityFramework:
         print(fft_tmp[freq_tmp == center_freq]/tmp_scale1)
         fft_tmp2 = np.abs(np.fft.rfft(template1, norm='ortho'))
         print(fft_tmp2[freq_tmp == center_freq])
-        print(tmp_scale1*[freq_tmp == center_freq]/fft_tmp[freq_tmp == center_freq])
+        print(tmp_scale1*fft_tmp2[freq_tmp == center_freq]/fft_tmp[freq_tmp == center_freq])
 
         # find the mle
         m1_tmp = self.lc_i.find_mle_PL(xx1, np.array(template1), tmp_scale1,
