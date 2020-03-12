@@ -423,10 +423,11 @@ class GravityFramework:
 
     def get_alpha_mle_pl(self, bdf, center_freq, noise_freq, bandwidth, decimate=10, direction1='x', x_focous=400,
                          frequency=13, offset_y=0,
-                         lambda_par=100e-6, height=0e-6, suppress_print=True, **fit_kwargs):
+                         lambda_par=100e-6, height=0e-6, suppress_print=True, large_bead=False, **fit_kwargs):
         """
-         Fit and extract the scale factor for the yukawa force compared to 10^10
+         Fit and extract the scale factor for the yukawa force compared to 10^8
          The function is performing the fit using two axes in a correlated way
+         :param large_bead: set to true if 7.6 um German beads are used (4.8um is used otherwise)
          :param offset_y: y offset of the attractor
          :param lambda_par: lambda parameter for the Yukawa term
          :param frequency: attractor shaking frequency
@@ -442,12 +443,16 @@ class GravityFramework:
         # temporally overriding the stroke and separation parameters - for sensitivity estimation purposes
         stroke = np.std(bdf.cant_pos[1] * 50) * np.sqrt(2) * 2  # stroke in y in micrometers
         cant_pos_x = np.mean(bdf.cant_pos[0])  # cantilever position in x for distance to sphere - in micrometers
-        separation = x_focous - aux.voltage_to_position(cant_pos_x) - 4.8 / 2
+        if large_bead:
+            separation = x_focous - aux.voltage_to_position(cant_pos_x) - 7.6 / 2
+        else:
+            separation = x_focous - aux.voltage_to_position(cant_pos_x) - 4.8 / 2
         time_sec = len(bdf.x2) / self.fsamp
         # stroke = 100  # in microns
         # separation = 6.5  # in microns
 
         if not suppress_print:
+            print('Large Bead: ', large_bead)
             print('Separation (face to face): ', separation)
             print('Stroke: ', stroke)
             print('Time: ', time_sec)
@@ -457,10 +462,17 @@ class GravityFramework:
             direction_tmp = 'x'
         else:
             direction_tmp = direction1
-        template1 = force_vs_time(separation=separation * 1e-6, height=height, stroke=stroke * 1e-6,
-                                  frequency=frequency,
-                                  direction=direction_tmp, lambda_par=lambda_par, offset_y=offset_y,
-                                  yuk_or_grav="yuk", alpha=1e10)
+
+        if large_bead:
+            template1 = force_vs_time(separation=separation * 1e-6, height=height, stroke=stroke * 1e-6,
+                                      frequency=frequency,
+                                      direction=direction_tmp, lambda_par=lambda_par, offset_y=offset_y,
+                                      yuk_or_grav="yuk", alpha=1e8, bead_size=3.8e-6)
+        else:
+            template1 = force_vs_time(separation=separation * 1e-6, height=height, stroke=stroke * 1e-6,
+                                      frequency=frequency,
+                                      direction=direction_tmp, lambda_par=lambda_par, offset_y=offset_y,
+                                      yuk_or_grav="yuk", alpha=1e8)
         template1 = np.array(list(template1[1]) * int(time_sec))
 
         # data preparation
