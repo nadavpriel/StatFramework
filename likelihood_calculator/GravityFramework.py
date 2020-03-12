@@ -303,7 +303,7 @@ class GravityFramework:
                       'error_A2': 1, 'error_f2': 1, 'error_delta_phi': 0.1,
                       'limit_phi': [-2 * np.pi, 2 * np.pi], 'limit_delta_phi': [-0.1, 0.1],
                       'limit_A': [0, 1000], 'limit_A2': [0, 1000],
-                      'print_level': 0, 'fix_f': True, 'fix_phi': False, 'fix_f2': True, 'fix_delta_phi': True,
+                      'print_level': 0, 'fix_f': True, 'fix_phi': False, 'fix_f2': True, 'fix_delta_phi': False,
                       'fix_A2': False}
 
         m1_tmp = [self.get_amplitude(bdf=bdf_, noise_rms=1, noise_rms2=1, bandwidth=bandwidth, **fit_kwargs)[2] for
@@ -473,6 +473,7 @@ class GravityFramework:
                                       frequency=frequency,
                                       direction=direction_tmp, lambda_par=lambda_par, offset_y=offset_y,
                                       yuk_or_grav="yuk", alpha=1e10)
+
         template1 = np.array(list(template1[1]) * int(time_sec))
 
         # data preparation
