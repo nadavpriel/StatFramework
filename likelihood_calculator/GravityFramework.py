@@ -467,12 +467,12 @@ class GravityFramework:
             template1 = force_vs_time(separation=separation * 1e-6, height=height, stroke=stroke * 1e-6,
                                       frequency=frequency,
                                       direction=direction_tmp, lambda_par=lambda_par, offset_y=offset_y,
-                                      yuk_or_grav="yuk", alpha=1e8, bead_size=3.8e-6)
+                                      yuk_or_grav="yuk", alpha=1e10, bead_size=3.8e-6)
         else:
             template1 = force_vs_time(separation=separation * 1e-6, height=height, stroke=stroke * 1e-6,
                                       frequency=frequency,
                                       direction=direction_tmp, lambda_par=lambda_par, offset_y=offset_y,
-                                      yuk_or_grav="yuk", alpha=1e8)
+                                      yuk_or_grav="yuk", alpha=1e10)
         template1 = np.array(list(template1[1]) * int(time_sec))
 
         # data preparation
