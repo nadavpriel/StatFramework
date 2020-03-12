@@ -172,6 +172,7 @@ class LikelihoodAnalyser:
         fft_tmp2 = np.abs(np.fft.rfft(self.template/scale, norm='ortho'))
         print(fft_tmp2[freq_tmp == center_freq])
         print(fft_tmp2[freq_tmp == center_freq]/fft_tmp[freq_tmp == center_freq])
+        print('new')
 
         mimuit_minimizer = Minuit(self.log_likelihood_template, **kwargs)
         mimuit_minimizer.migrad(ncall=50000)
