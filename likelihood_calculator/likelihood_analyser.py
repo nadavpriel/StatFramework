@@ -166,14 +166,6 @@ class LikelihoodAnalyser:
                                  2. * (noise_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
         self.data_y2 = signal.filtfilt(b, a, x)[5000:-5000:decimate]  # x3 data - QPD carrier phase
 
-        fft_tmp = np.abs(np.fft.rfft(self.data_y/scale, norm='ortho'))
-        freq_tmp = np.fft.rfftfreq(len(self.data_y), d=1. / 500)
-        print(fft_tmp[freq_tmp == center_freq])
-        fft_tmp2 = np.abs(np.fft.rfft(self.template/scale, norm='ortho'))
-        print(fft_tmp2[freq_tmp == center_freq])
-        print(fft_tmp2[freq_tmp == center_freq]/fft_tmp[freq_tmp == center_freq])
-        print('new')
-
         mimuit_minimizer = Minuit(self.log_likelihood_template, **kwargs)
         mimuit_minimizer.migrad(ncall=50000)
         return mimuit_minimizer

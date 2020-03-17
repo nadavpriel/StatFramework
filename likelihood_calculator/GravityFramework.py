@@ -488,13 +488,6 @@ class GravityFramework:
             xx1 = bdf.z2
             tmp_scale1 = self.scale_Z2 * np.interp(center_freq, self.tf_freq, self.tf_ffts[2])
 
-        fft_tmp = np.abs(np.fft.rfft(xx1/tmp_scale1, norm='ortho'))
-        freq_tmp = np.fft.rfftfreq(len(xx1), d=1. / 5000)
-        print(fft_tmp[freq_tmp == center_freq])
-        fft_tmp2 = np.abs(np.fft.rfft(template1, norm='ortho'))
-        print(fft_tmp2[freq_tmp == center_freq])
-        print(fft_tmp2[freq_tmp == center_freq]/fft_tmp[freq_tmp == center_freq])
-
         # find the mle
         m1_tmp = self.lc_i.find_mle_PL(xx1, np.array(template1), tmp_scale1,
                                        center_freq=center_freq, noise_freq=noise_freq,
