@@ -343,11 +343,12 @@ class GravityFramework:
                       'limit_A': [0, 100000],
                       'print_level': 0, 'fix_f': True, 'fix_phi': False}
         if bimodal:
-            fit_kwargs['A2'] = 1
-            fit_kwargs['phi2'] = 0,
-            fit_kwargs['error_A2'] = 1
-            fit_kwargs['error_phi2'] = 0.5
-            fit_kwargs['limit_phi2'] = [-2 * np.pi, 2 * np.pi]
+            fit_kwargs = {'A': 10, 'f': drive_freq, 'phi': 0.18,
+                          'A2': 1, 'phi2': 0.5, 'error_A2': 1,
+                          'error_A': 1, 'error_f': 1, 'error_phi': 0.5, 'error_phi2': 0.5, 'errordef': 1,
+                          'limit_phi': [-2 * np.pi, 2 * np.pi], 'limit_phi2': [-2 * np.pi, 2 * np.pi],
+                          'limit_A': [0, 100000], 'limit_A2': [0, 100000],
+                          'print_level': 0, 'fix_f': True, 'fix_phi': False}
         if include_sigma:
             fit_kwargs = {'A': 0, 'f': drive_freq, 'phi': 0,
                           'error_A': 1, 'error_f': 1, 'error_phi': 1, 'errordef': 1,
