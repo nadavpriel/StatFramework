@@ -86,9 +86,10 @@ class GravityFramework:
 
         return m1_tmp.values[0], m1_tmp.errors[0], m1_tmp
 
-    def get_z_amplitude(self, bdf, noise_rms, bandwidth=1, decimate=10, **fit_kwargs):
+    def get_z_amplitude(self, bdf, noise_rms, bandwidth=1, decimate=10, bimodal=False, **fit_kwargs):
         """
         Fit and extract the Z2 amplitude of one harmonic from one particular file
+        :param bimodal: bimodal fit to account for spin
         :param decimate: decimate the data before fitting
         :param bandwidth: bandpass bandwidth
         :param noise_rms: noise std of Z2 and X3
@@ -103,7 +104,7 @@ class GravityFramework:
 
         m1_tmp = self.lc_i.find_mle_sin(xx2, fsamp=self.fsamp / decimate,
                                         noise_rms=noise_rms,
-                                        plot=False, suppress_print=True, **fit_kwargs)
+                                        plot=False, suppress_print=True, bimodal=bimodal, **fit_kwargs)
 
         print('***************************************************')
         print('Z2-amplitude: ', '{:.2e}'.format(np.abs(m1_tmp.values[0])))
@@ -324,9 +325,10 @@ class GravityFramework:
         return m1_tmp
 
     def build_z_response(self, bdf_list, drive_freq, charges, bandwidth, decimate=10,
-                         include_sigma=False):
+                         include_sigma=False, bimodal=False):
         """
         Calculates the Z response by fitting sine
+        :param bimodal: bimodal fit of response to account for spin
         :param decimate: decimate data for speedup
         :param include_sigma: include sigma in the fit
         :param bandwidth: bandwidth for the bandpass filter
@@ -335,11 +337,17 @@ class GravityFramework:
         :param charges: charge state on the sphere
         :return: m1_tmp, list of the minimizer
         """
-        fit_kwargs = {'A': 10, 'f': drive_freq, 'phi': 0,
+        fit_kwargs = {'A': 10, 'f': drive_freq, 'phi': 0.18,
                       'error_A': 1, 'error_f': 1, 'error_phi': 0.5, 'errordef': 1,
                       'limit_phi': [-2 * np.pi, 2 * np.pi],
                       'limit_A': [0, 100000],
                       'print_level': 0, 'fix_f': True, 'fix_phi': False}
+        if bimodal:
+            fit_kwargs['A2'] = 1
+            fit_kwargs['phi2'] = 0,
+            fit_kwargs['error_A2'] = 1
+            fit_kwargs['error_phi2'] = 0.5
+            fit_kwargs['limit_phi2'] = [-2 * np.pi, 2 * np.pi]
         if include_sigma:
             fit_kwargs = {'A': 0, 'f': drive_freq, 'phi': 0,
                           'error_A': 1, 'error_f': 1, 'error_phi': 1, 'errordef': 1,
