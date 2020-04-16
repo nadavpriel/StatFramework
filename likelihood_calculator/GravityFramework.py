@@ -357,7 +357,7 @@ class GravityFramework:
                           'sigma': self.noise_rms_z2, 'fix_sigma': False, 'limit_sigma': [0, None]}
 
         m1_tmp = [self.get_z_amplitude(bdf=bdf_, noise_rms=1, bandwidth=bandwidth, decimate=decimate,
-                                       **fit_kwargs)[2] for bdf_ in bdf_list]
+                                       bimodal=bimodal, **fit_kwargs)[2] for bdf_ in bdf_list]
 
         force = charges * 1.6e-19 * 20 / 8e-3 * 0.61  # in Newtons
         A_mean = np.mean([m1.values[0] for m1 in m1_tmp])
