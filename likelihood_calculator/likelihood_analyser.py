@@ -126,7 +126,7 @@ class LikelihoodAnalyser:
             print(func_t)
             print(data_)
             res += sum(np.power(np.abs(data_ - func_t), 2))
-        print(A, phi, res)
+        print('A = ', A, 'phi = ', phi,'res = ', res)
 
         return res
 
