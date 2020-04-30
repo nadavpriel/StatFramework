@@ -185,6 +185,8 @@ class LikelihoodAnalyser:
         :param x: 1 dim. position data (time domain)
         :return: minimizer result
         """
+
+        print('te')
         # filtering the data at the required frequencies
         self.data_y = []
         for center_freq in signal_freqs:
