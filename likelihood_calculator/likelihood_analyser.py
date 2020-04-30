@@ -223,7 +223,7 @@ class LikelihoodAnalyser:
         self.harmoincs_amp = np.array([fft[freq == freq_] for freq_ in signal_freqs])
         self.harmoincs_phases = np.array([angles[freq == freq_] for freq_ in signal_freqs])
 
-        mimuit_minimizer = Minuit(self.log_likelihood_multi_harmonics, **kwargs)
+        mimuit_minimizer = Minuit(self.least_squares_multi_harmonics, **kwargs)
         mimuit_minimizer.migrad(ncall=50000)
 
         return mimuit_minimizer
