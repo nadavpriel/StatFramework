@@ -17,6 +17,9 @@ class LikelihoodAnalyser:
         self.template = None
         self.template2 = None
 
+        self.harmoincs_amp = None
+        self.harmoincs_phases = None
+
     def log_likelihood_template(self, alpha, phase, sigma):
         """
         Log likelihood function, using template and control dataset to constrain the noise
@@ -169,6 +172,39 @@ class LikelihoodAnalyser:
         mimuit_minimizer = Minuit(self.log_likelihood_template, **kwargs)
         mimuit_minimizer.migrad(ncall=50000)
         return mimuit_minimizer
+
+    def find_mle_multiHarmoincs(self, x, template, scale, signal_freqs, bandwidth, decimate=10, **kwargs):
+        """
+        The function is fitting the data with a template using iminuit and the likelihood function
+        The fitting is for multiple harmonics simultaneously
+        :param scale: scale to convert to force units
+        :param decimate: decimate data (good for correlated datasets)
+        :param template: template of the signal model
+        :param bandwidth: bandwidth for butter filter [Hz]
+        :param signal_freqs: frequencies of the different harmonics
+        :param x: 1 dim. position data (time domain)
+        :return: minimizer result
+        """
+        # filtering the data at the required frequencies
+        self.data_y = []
+        for center_freq in signal_freqs:
+            b, a = signal.butter(3, [2. * (center_freq - bandwidth / 2.) / self.fsamp,
+                                     2. * (center_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
+            self.data_y.append(signal.filtfilt(b, a, x)[5000:-5000:decimate])
+
+        if len(template)==5000:
+            freq = np.fft.rfftfreq(template, 1 / self.fsamp)
+            fft = np.abs(np.fft.rfft(template))*2/5000/5000
+            angles = (np.anglen(np.fft.rfft(template))+np.pi/2)%(2*np.pi)
+        else:
+            print('Template has to be one second long')
+
+        self.harmoincs_amp = np.array([fft[freq==freq_] for freq_ in signal_freqs])
+        self.harmoincs_phases = np.array([angles[freq == freq_] for freq_ in signal_freqs])
+
+        # mimuit_minimizer = Minuit(self.log_likelihood_template, **kwargs)
+        # mimuit_minimizer.migrad(ncall=50000)
+        # return mimuit_minimizer
 
     def find_mle_template2(self, x2, template2, x3, template3, center_freq, bandwidth, decimate, **kwargs):
         """
