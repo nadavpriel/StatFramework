@@ -208,10 +208,10 @@ class LikelihoodAnalyser:
         self.data_x = self.data_x[5000:-5000:decimate]
         self.harmoincs_freqs = signal_freqs
         self.data_y = []
-        for center_freq, scale_ in zip(signal_freqs, scales):
+        for center_freq in signal_freqs:
             b, a = signal.butter(3, [2. * (center_freq - bandwidth / 2.) / self.fsamp,
                                      2. * (center_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
-            self.data_y.append(signal.filtfilt(b, a, x)[5000:-5000:decimate]*scale_)
+            self.data_y.append(signal.filtfilt(b, a, x)[5000:-5000:decimate])
 
         if len(template) == 5000:
             freq = np.fft.rfftfreq(len(template), 1 / self.fsamp)
@@ -220,7 +220,7 @@ class LikelihoodAnalyser:
         else:
             print('Template has to be one second long')
 
-        self.harmoincs_amp = np.array([fft[freq == freq_] for freq_ in signal_freqs])
+        self.harmoincs_amp = np.array([fft[freq == freq_]*scale_ for freq_,scale_ in zip(signal_freqs, scales)])
         self.harmoincs_phases = np.array([angles[freq == freq_] for freq_ in signal_freqs])
 
         mimuit_minimizer = Minuit(self.least_squares_multi_harmonics, **kwargs)
