@@ -185,8 +185,6 @@ class LikelihoodAnalyser:
         :param x: 1 dim. position data (time domain)
         :return: minimizer result
         """
-
-        print('te')
         # filtering the data at the required frequencies
         self.data_y = []
         for center_freq in signal_freqs:
@@ -195,9 +193,9 @@ class LikelihoodAnalyser:
             self.data_y.append(signal.filtfilt(b, a, x)[5000:-5000:decimate])
 
         if len(template) == 5000:
-            freq = np.fft.rfftfreq(x, 1 / self.fsamp)
-            fft = np.abs(np.fft.rfft(x)) * 2 / 5000 / 5000
-            angles = (np.anglen(np.fft.rfft(x)) + np.pi / 2) % (2 * np.pi)
+            freq = np.fft.rfftfreq(len(template), 1 / self.fsamp)
+            fft = np.abs(np.fft.rfft(template)) * 2 / 5000 / 5000
+            angles = (np.angle(np.fft.rfft(template)) + np.pi / 2) % (2 * np.pi)
         else:
             print('Template has to be one second long')
 
