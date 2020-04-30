@@ -204,7 +204,8 @@ class LikelihoodAnalyser:
         """
         # filtering the data at the required frequencies
         # apply a bandpass filter to data and store data in the correct place for the minimization
-        self.data_x = np.arange(0, len(x)) / self.fsamp[5000:-5000:decimate]
+        self.data_x = np.arange(0, len(x)) / self.fsamp
+        self.data_x = self.data_x[5000:-5000:decimate]
         self.harmoincs_freqs = signal_freqs
         self.data_y = []
         for center_freq, scale_ in zip(signal_freqs, scales):
