@@ -211,7 +211,7 @@ class LikelihoodAnalyser:
         for center_freq, scale_ in zip(signal_freqs, scales):
             b, a = signal.butter(3, [2. * (center_freq - bandwidth / 2.) / self.fsamp,
                                      2. * (center_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
-            self.data_y.append(signal.filtfilt(b, a, x)[5000:-5000:decimate])*scale_
+            self.data_y.append(signal.filtfilt(b, a, x)[5000:-5000:decimate]*scale_)
 
         if len(template) == 5000:
             freq = np.fft.rfftfreq(len(template), 1 / self.fsamp)
