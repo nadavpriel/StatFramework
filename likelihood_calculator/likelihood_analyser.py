@@ -128,7 +128,7 @@ class LikelihoodAnalyser:
             res += sum(np.power(np.abs(data_ - func_t), 2))
         print('A = ', A, 'phi = ', phi,'res = ', res)
 
-        return res
+        return res/1e6
 
     def least_squares_sine2(self, A, f, phi, sigma):
         """
