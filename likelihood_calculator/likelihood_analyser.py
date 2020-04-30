@@ -8,7 +8,7 @@ import time
 class LikelihoodAnalyser:
     def __init__(self):
         self.data_x = 0  # x-data to fit
-        self.data_y = 0  # y-data to fit
+        self.data_y = None  # y-data to fit
         self.data_y2 = 0  # second y-data to fit
         self.fsamp = 5000  # sampling rate
         self.noise_sigma = 1  # gaussian white noise std
@@ -110,6 +110,22 @@ class LikelihoodAnalyser:
         res2 = sum(np.power(np.abs(self.data_y2 - func_t2), 2)) / self.noise_sigma2 ** 2
         return res + res2
 
+    def least_squares_multi_harmonics(self, A, f, phi):
+        """
+        least squares for minimization - sine function for multi datasets
+        :param A: Amplitudes of the first harmoincs in the list data_y
+        :param f: frequency of the fitted sine
+        :param phi: global phase shift
+        :return: cost function - sum of squares
+        """
+
+        res = 0
+        for A_, phi_, data_ in zip(self.harmoincs_amp, self.harmoincs_phases, self.data_y):
+            func_t = A * A_ * np.sin(2 * np.pi * f * self.data_x + phi_ + phi)  # function to minimize
+            res = sum(np.power(np.abs(data_ - func_t), 2))
+
+        return res
+
     def least_squares_sine2(self, A, f, phi, sigma):
         """
         least squares for minimization - sine function
@@ -173,11 +189,11 @@ class LikelihoodAnalyser:
         mimuit_minimizer.migrad(ncall=50000)
         return mimuit_minimizer
 
-    def find_mle_multiHarmoincs(self, x, template, scale, signal_freqs, bandwidth, decimate=10, **kwargs):
+    def find_mle_multiHarmoincs(self, x, template, scales, signal_freqs, bandwidth, decimate=10, **kwargs):
         """
         The function is fitting the data with a template using iminuit and the likelihood function
         The fitting is for multiple harmonics simultaneously
-        :param scale: scale to convert to force units
+        :param scales: scale to convert to force units
         :param decimate: decimate data (good for correlated datasets)
         :param template: template of the signal model
         :param bandwidth: bandwidth for butter filter [Hz]
@@ -186,11 +202,13 @@ class LikelihoodAnalyser:
         :return: minimizer result
         """
         # filtering the data at the required frequencies
+        # apply a bandpass filter to data and store data in the correct place for the minimization
+        self.data_x = np.arange(0, len(x)) / self.samp[5000:-5000:decimate]
         self.data_y = []
-        for center_freq in signal_freqs:
+        for center_freq, scale_ in zip(signal_freqs, scales):
             b, a = signal.butter(3, [2. * (center_freq - bandwidth / 2.) / self.fsamp,
                                      2. * (center_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
-            self.data_y.append(signal.filtfilt(b, a, x)[5000:-5000:decimate])
+            self.data_y.append(signal.filtfilt(b, a, x)[5000:-5000:decimate])*scale_
 
         if len(template) == 5000:
             freq = np.fft.rfftfreq(len(template), 1 / self.fsamp)
@@ -202,9 +220,10 @@ class LikelihoodAnalyser:
         self.harmoincs_amp = np.array([fft[freq == freq_] for freq_ in signal_freqs])
         self.harmoincs_phases = np.array([angles[freq == freq_] for freq_ in signal_freqs])
 
-        # mimuit_minimizer = Minuit(self.log_likelihood_template, **kwargs)
-        # mimuit_minimizer.migrad(ncall=50000)
-        # return mimuit_minimizer
+        mimuit_minimizer = Minuit(self.log_likelihood_multi_harmonics, **kwargs)
+        mimuit_minimizer.migrad(ncall=50000)
+
+        return mimuit_minimizer
 
     def find_mle_template2(self, x2, template2, x3, template3, center_freq, bandwidth, decimate, **kwargs):
         """
