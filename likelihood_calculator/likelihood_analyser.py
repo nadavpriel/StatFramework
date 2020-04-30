@@ -31,9 +31,9 @@ class LikelihoodAnalyser:
         func_t = alpha * np.array(self.template)  # function to minimize
         func_t = np.roll(func_t, int(phase))
 
-        res = sum(np.power(np.abs(self.data_y - func_t), 2))/sigma**2
-        res += sum(np.power(np.abs(self.data_y2), 2))/sigma**2
-        res += 4*len(self.data_y)*np.log(sigma)
+        res = sum(np.power(np.abs(self.data_y - func_t), 2)) / sigma ** 2
+        res += sum(np.power(np.abs(self.data_y2), 2)) / sigma ** 2
+        res += 4 * len(self.data_y) * np.log(sigma)
 
         return res
 
@@ -65,7 +65,7 @@ class LikelihoodAnalyser:
         res = sum(np.power(np.abs(self.data_y - func_t), 2))
         res2 = sum(np.power(np.abs(self.data_y2 - func_t2), 2))
 
-        return res+res2
+        return res + res2
 
     def least_squares_sine(self, A, f, phi):
         """
@@ -122,8 +122,8 @@ class LikelihoodAnalyser:
         """
         func_t = A * np.sin(2 * np.pi * f * self.data_x + phi)  # function to minimize
         res = sum(np.power(np.abs(self.data_y - func_t), 2))
-        res /= sigma**2
-        res += 2*len(self.data_x) * np.log(sigma)
+        res /= sigma ** 2
+        res += 2 * len(self.data_x) * np.log(sigma)
 
         return res
 
@@ -163,7 +163,7 @@ class LikelihoodAnalyser:
         b, a = signal.butter(3, [2. * (center_freq - bandwidth / 2.) / self.fsamp,
                                  2. * (center_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
         self.data_y = signal.filtfilt(b, a, x)[5000:-5000:decimate]
-        self.template = signal.filtfilt(b, a, template)[5000:-5000:decimate]*scale
+        self.template = signal.filtfilt(b, a, template)[5000:-5000:decimate] * scale
 
         b, a = signal.butter(3, [2. * (noise_freq - bandwidth / 2.) / self.fsamp,
                                  2. * (noise_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
@@ -192,14 +192,14 @@ class LikelihoodAnalyser:
                                      2. * (center_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
             self.data_y.append(signal.filtfilt(b, a, x)[5000:-5000:decimate])
 
-        if len(template)==5000:
-            freq = np.fft.rfftfreq(template, 1 / self.fsamp)
-            fft = np.abs(np.fft.rfft(template))*2/5000/5000
-            angles = (np.anglen(np.fft.rfft(template))+np.pi/2)%(2*np.pi)
+        if len(template) == 5000:
+            freq = np.fft.rfftfreq(x, 1 / self.fsamp)
+            fft = np.abs(np.fft.rfft(x)) * 2 / 5000 / 5000
+            angles = (np.anglen(np.fft.rfft(x)) + np.pi / 2) % (2 * np.pi)
         else:
             print('Template has to be one second long')
 
-        self.harmoincs_amp = np.array([fft[freq==freq_] for freq_ in signal_freqs])
+        self.harmoincs_amp = np.array([fft[freq == freq_] for freq_ in signal_freqs])
         self.harmoincs_phases = np.array([angles[freq == freq_] for freq_ in signal_freqs])
 
         # mimuit_minimizer = Minuit(self.log_likelihood_template, **kwargs)
