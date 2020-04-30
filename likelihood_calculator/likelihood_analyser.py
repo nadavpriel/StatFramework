@@ -194,7 +194,7 @@ class LikelihoodAnalyser:
 
         if len(template) == 5000:
             freq = np.fft.rfftfreq(len(template), 1 / self.fsamp)
-            fft = np.abs(np.fft.rfft(template)) * 2 / 5000 / 5000
+            fft = np.abs(np.fft.rfft(template)) * 2 / np.sqrt(5000 * 5000)
             angles = (np.angle(np.fft.rfft(template)) + np.pi / 2) % (2 * np.pi)
         else:
             print('Template has to be one second long')
