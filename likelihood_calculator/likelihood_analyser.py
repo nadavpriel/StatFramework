@@ -111,7 +111,7 @@ class LikelihoodAnalyser:
         res2 = sum(np.power(np.abs(self.data_y2 - func_t2), 2)) / self.noise_sigma2 ** 2
         return res + res2
 
-    def least_squares_multi_harmonics(self, A, phi):
+    def least_squares_multi_harmonics(self, A, phi, sigma):
         """
         least squares for minimization - sine function for multi datasets
         :param A: Amplitudes of the first harmoincs in the list data_y
@@ -121,11 +121,12 @@ class LikelihoodAnalyser:
         """
 
         res = 0
-        A_all = sum(self.harmoincs_amp)
         for A_, phi_, f_, data_ in zip(self.harmoincs_amp, self.harmoincs_phases, self.harmoincs_freqs, self.data_y):
             func_t = A * A_ * np.sin(2 * np.pi * f_ * self.data_x + phi_ + phi)  # function to minimize
             res += sum(np.power(np.abs(data_ - func_t), 2))
         # print('A = ', A, 'phi = ', phi, 'res = ', res/1e6)
+        res /= (sigma**2)
+        res += 2*np.log(sigma)*len(self.harmoincs_amp)
 
         return res
 
