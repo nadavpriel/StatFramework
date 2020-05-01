@@ -124,7 +124,7 @@ class LikelihoodAnalyser:
         A_all = sum(self.harmoincs_amp)
         for A_, phi_, f_, data_ in zip(self.harmoincs_amp, self.harmoincs_phases, self.harmoincs_freqs, self.data_y):
             func_t = A * A_ * np.sin(2 * np.pi * f_ * self.data_x + phi_ + phi)  # function to minimize
-            res += sum(np.power(np.abs(data_ - func_t), 2))*A_/A_all
+            res += sum(np.power(np.abs(data_ - func_t), 2))*A_*A_
         # print('A = ', A, 'phi = ', phi, 'res = ', res/1e6)
 
         return res/1e6
