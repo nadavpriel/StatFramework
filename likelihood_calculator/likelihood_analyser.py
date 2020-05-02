@@ -125,10 +125,10 @@ class LikelihoodAnalyser:
         for A_, phi_, f_, noise_, data_ in zip(self.harmoincs_amp, self.harmoincs_phases, self.harmoincs_freqs,
                                                self.harmoincs_noise, self.data_y):
             func_t = A * A_ * np.sin(2 * np.pi * f_ * self.data_x + phi_ + phi)  # function to minimize
-            res += sum(np.power(np.abs(data_ - func_t), 2))/noise_
+            res += sum(np.power(np.abs(data_ - func_t), 2)) / noise_
         # print('A = ', A, 'phi = ', phi, 'res = ', res/1e6)
-        res /= (sigma**2)
-        res += 2*np.log(sigma)*len(self.harmoincs_amp)
+        res /= (sigma ** 2)
+        res += 2 * np.log(sigma) * len(self.harmoincs_amp)
 
         return res
 
@@ -227,13 +227,28 @@ class LikelihoodAnalyser:
         else:
             print('Template has to be one second long')
 
-        self.harmoincs_amp = np.array([fft[freq == freq_]*scale_ for freq_,scale_ in zip(signal_freqs, scales)])
+        self.harmoincs_amp = np.array([fft[freq == freq_] * scale_ for freq_, scale_ in zip(signal_freqs, scales)])
         self.harmoincs_phases = np.array([angles[freq == freq_] for freq_ in signal_freqs])
 
         mimuit_minimizer = Minuit(self.least_squares_multi_harmonics, **kwargs)
         mimuit_minimizer.migrad(ncall=50000)
 
         return mimuit_minimizer
+
+    def get_PL_multiHarmonics(self, A_array, **kwargs):
+        """
+        This function must be called after calling find_mle_multiHarmonics, and uses the template and scales and data
+        in memory without redefining it.
+        :return: array of PL points
+        """
+        PLarray = []
+        kwargs['fix_A'] = True
+        for A_ in A_array:
+            kwargs['A'] = A_
+            mimuit_minimizer = Minuit(self.least_squares_multi_harmonics, **kwargs)
+            mimuit_minimizer.migrad(ncall=50000)
+            PLarray.append(mimuit_minimizer.fval)
+        return np.array(PLarray)
 
     def find_mle_template2(self, x2, template2, x3, template3, center_freq, bandwidth, decimate, **kwargs):
         """
