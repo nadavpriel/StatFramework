@@ -20,6 +20,7 @@ class LikelihoodAnalyser:
         self.harmoincs_amp = None
         self.harmoincs_phases = None
         self.harmoincs_freqs = None
+        self.harmoincs_noise = None
 
     def log_likelihood_template(self, alpha, phase, sigma):
         """
@@ -121,9 +122,10 @@ class LikelihoodAnalyser:
         """
 
         res = 0
-        for A_, phi_, f_, data_ in zip(self.harmoincs_amp, self.harmoincs_phases, self.harmoincs_freqs, self.data_y):
+        for A_, phi_, f_, noise_, data_ in zip(self.harmoincs_amp, self.harmoincs_phases, self.harmoincs_freqs,
+                                               self.harmoincs_noise, self.data_y):
             func_t = A * A_ * np.sin(2 * np.pi * f_ * self.data_x + phi_ + phi)  # function to minimize
-            res += sum(np.power(np.abs(data_ - func_t), 2))
+            res += sum(np.power(np.abs(data_ - func_t), 2))/noise_
         # print('A = ', A, 'phi = ', phi, 'res = ', res/1e6)
         res /= (sigma**2)
         res += 2*np.log(sigma)*len(self.harmoincs_amp)
@@ -193,10 +195,11 @@ class LikelihoodAnalyser:
         mimuit_minimizer.migrad(ncall=50000)
         return mimuit_minimizer
 
-    def find_mle_multiHarmoincs(self, x, template, scales, signal_freqs, bandwidth, decimate=10, **kwargs):
+    def find_mle_multiHarmoincs(self, x, template, scales, signal_freqs, bandwidth, noises, decimate=10, **kwargs):
         """
         The function is fitting the data with a template using iminuit and the likelihood function
         The fitting is for multiple harmonics simultaneously
+        :param noises: list with noise term for each harmonic
         :param scales: scale to convert to force units
         :param decimate: decimate data (good for correlated datasets)
         :param template: template of the signal model
@@ -210,6 +213,7 @@ class LikelihoodAnalyser:
         self.data_x = np.arange(0, len(x)) / self.fsamp
         self.data_x = self.data_x[5000:-5000:decimate]
         self.harmoincs_freqs = signal_freqs
+        self.harmoincs_noise = noises
         self.data_y = []
         for center_freq in signal_freqs:
             b, a = signal.butter(3, [2. * (center_freq - bandwidth / 2.) / self.fsamp,
