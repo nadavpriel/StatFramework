@@ -532,7 +532,7 @@ class GravityFramework:
         cant_pos_x = np.mean(bdf.cant_pos[0])  # cantilever position in x for distance to sphere - in micrometers
         cant_pos_y = np.mean(bdf.cant_pos[1])  # cantilever position in x for distance to sphere - in micrometers
         if large_bead:
-            separation = x_focous - aux.voltage_to_position(cant_pos_x) - 7.6 / 2
+            separation = x_focous - aux.voltage_to_position(cant_pos_x) - 7.6 / 2 + 1
         else:
             separation = x_focous - aux.voltage_to_position(cant_pos_x) - 4.8 / 2
         time_sec = len(bdf.x2) / self.fsamp
