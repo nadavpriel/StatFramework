@@ -537,6 +537,7 @@ class GravityFramework:
             separation = x_focous - aux.voltage_to_position(cant_pos_x) - 4.8 / 2
         time_sec = len(bdf.x2) / self.fsamp
         offset_y = y_focous - (aux.voltage_to_position(cant_pos_y) - 25 * 9.5)
+        print(aux.voltage_to_position(cant_pos_y))
         # stroke = 100  # in microns
         # separation = 6.5  # in microns
 
