@@ -75,7 +75,7 @@ class GravityFramework:
         xx3 = bb.response_at_freq3('x', frequency, bandwidth=bandwidth) / 6
         xx3 = xx3[5000:-5000:decimate]  # cut out the first and last second
 
-        m1_tmp = self.lc_i.find_mle_2sin(xx2, xx3, fsamp=self.fsamp/decimate,
+        m1_tmp = self.lc_i.find_mle_2sin(xx2, xx3, fsamp=self.fsamp / decimate,
                                          noise_rms=noise_rms,
                                          noise_rms2=noise_rms2,
                                          plot=False, suppress_print=True, **fit_kwargs)
@@ -508,3 +508,71 @@ class GravityFramework:
         print('reduced chi2: ', m1_tmp.fval / (len(bdf.x2) - 1))
 
         return m1_tmp.values[0], m1_tmp.errors[0], m1_tmp
+
+    def get_alpha_mle_multiHarmonics(self, bdf, freqs_array, noise_array, bandwidth, decimate=10, x_focous=400,
+                                     y_focous=200,
+                                     lambda_par=100e-6, height=0e-6, suppress_print=True, large_bead=False,
+                                     **fit_kwargs):
+        """
+         Fit and extract the scale factor for the yukawa force compared to 10^8
+         The function is performing the multi harmonics fit using the z axis
+         :param y_focous: y position of beam from beam profiling
+         :param x_focous: x position of beam from beam profiling
+         :param large_bead: set to true if 7.6 um German beads are used (4.8um is used otherwise)
+         :param lambda_par: lambda parameter for the Yukawa term
+         :param freqs_array: search frequencies
+         :param height: attractor height
+         :param decimate: decimate data before the fit
+         :param bandwidth: bandpass bandwidth
+         :param noise_array: noise array for the fit
+         :param bdf: bdf dataset to be used
+         :return: amplitude, error
+         """
+        stroke = np.std(bdf.cant_pos[1] * 50) * np.sqrt(2) * 2  # stroke in y in micrometers
+        cant_pos_x = np.mean(bdf.cant_pos[0])  # cantilever position in x for distance to sphere - in micrometers
+        cant_pos_y = np.mean(bdf.cant_pos[1])  # cantilever position in x for distance to sphere - in micrometers
+        if large_bead:
+            separation = x_focous - aux.voltage_to_position(cant_pos_x) - 7.6 / 2
+        else:
+            separation = x_focous - aux.voltage_to_position(cant_pos_x) - 4.8 / 2
+        time_sec = len(bdf.x2) / self.fsamp
+        offset_y = y_focous - (aux.voltage_to_position(cant_pos_y) - 25 * 9.5)
+        # stroke = 100  # in microns
+        # separation = 6.5  # in microns
+
+        if not suppress_print:
+            print('Large Bead: ', large_bead)
+            print('Separation (face to face): ', separation)
+            print('y-offset: ', offset_y)
+            print('Stroke: ', stroke)
+            print('Time: ', time_sec)
+
+        if large_bead:
+            template1 = force_vs_time(separation=separation * 1e-6, height=height, stroke=stroke * 1e-6,
+                                      frequency=3,
+                                      direction='z', lambda_par=lambda_par, offset_y=offset_y,
+                                      yuk_or_grav="yuk", alpha=1e10, bead_size=3.8e-6)
+        else:
+            template1 = force_vs_time(separation=separation * 1e-6, height=height, stroke=stroke * 1e-6,
+                                      frequency=3,
+                                      direction='z', lambda_par=lambda_par, offset_y=offset_y,
+                                      yuk_or_grav="yuk", alpha=1e10)
+
+        template1 = np.array(template1[1]) * 1.85 / 1.55
+
+        # data and scale preparation
+        xx1 = bdf.z2
+        tmp_scales = self.scale_Z2 * np.interp(freqs_array, self.tf_freq, self.tf_ffts[2])
+
+        # find the mle
+        m1_tmp = self.lc_i.find_mle_multiHarmoincs(x=xx1, template=template1, scales=tmp_scales,
+                                                   signal_freqs=freqs_array, bandwidth=bandwidth,
+                                                   noises=noise_array / noise_array[0],
+                                                   decimate=decimate, **fit_kwargs)
+
+        print('***************************************************')
+        print('alpha mle: ', '{:.2e}'.format(m1_tmp.values[0]))
+        print('sigma mle: ', '{:.2e}'.format(m1_tmp.values[2]))
+        print('reduced chi2: ', m1_tmp.fval / (len(bdf.x2) - 1))
+
+        return m1_tmp.values[0], m1_tmp.values[2], m1_tmp

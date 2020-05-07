@@ -130,7 +130,6 @@ class LikelihoodAnalyser:
         # print('A = ', A, 'phi = ', phi, 'res = ', res/1e6)
         res /= (sigma ** 2)
         res += 2 * np.log(sigma) * len(self.harmoincs_amp) * N
-        print( 2 * np.log(sigma) * len(self.harmoincs_amp) * N)
         return res
 
     def least_squares_sine2(self, A, f, phi, sigma):
