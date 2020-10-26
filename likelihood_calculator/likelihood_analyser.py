@@ -235,6 +235,46 @@ class LikelihoodAnalyser:
 
         return mimuit_minimizer
 
+    def find_mle_multiHarmoincs_sideband(self, x, template, scales, signal_freqs, bandwidth, noises, decimate=10, **kwargs):
+        """
+        The function is fitting the data with a template using iminuit and the likelihood function
+        The fitting is for multiple harmonics simultaneously
+        :param noises: list with noise term for each harmonic
+        :param scales: scale to convert to force units
+        :param decimate: decimate data (good for correlated datasets)
+        :param template: template of the signal model
+        :param bandwidth: bandwidth for butter filter [Hz]
+        :param signal_freqs: frequencies of the different harmonics
+        :param x: 1 dim. position data (time domain)
+        :return: minimizer result
+        """
+        # filtering the data at the required frequencies
+        # apply a bandpass filter to data and store data in the correct place for the minimization
+        self.data_x = np.arange(0, len(x)) / self.fsamp
+        self.data_x = self.data_x[5000:-5000:decimate]
+        self.harmoincs_freqs = signal_freqs
+        self.harmoincs_noise = noises
+        self.data_y = []
+        for center_freq in signal_freqs:
+            b, a = signal.butter(3, [2. * ((center_freq+1) - bandwidth / 2.) / self.fsamp,
+                                     2. * ((center_freq+1) + bandwidth / 2.) / self.fsamp], btype='bandpass')
+            self.data_y.append(signal.filtfilt(b, a, x)[5000:-5000:decimate])
+
+        if len(template) == 5000:
+            freq = np.fft.rfftfreq(len(template), 1 / self.fsamp)
+            fft = np.abs(np.fft.rfft(template)) * 2 / np.sqrt(5000 * 5000)
+            angles = (np.angle(np.fft.rfft(template)) + np.pi / 2) % (2 * np.pi)
+        else:
+            print('Template has to be one second long')
+
+        self.harmoincs_amp = np.array([fft[freq == freq_] * scale_ for freq_, scale_ in zip(signal_freqs, scales)])
+        self.harmoincs_phases = np.array([angles[freq == freq_] for freq_ in signal_freqs])
+
+        mimuit_minimizer = Minuit(self.least_squares_multi_harmonics, **kwargs)
+        mimuit_minimizer.migrad(ncall=50000)
+
+        return mimuit_minimizer
+
     def get_PL_multiHarmonics(self, A_array, **kwargs):
         """
         This function must be called after calling find_mle_multiHarmonics, and uses the template and scales and data
