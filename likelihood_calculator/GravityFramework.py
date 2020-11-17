@@ -31,6 +31,7 @@ class GravityFramework:
         self.Error_array = None  # errors of the amplitudes
         self.scale_X2 = 1  # scale X2 signal to force in Newtons
         self.scale_X3 = 1  # scale X3 signal to force in Newtons
+        self.scale_Y2 = 1  # scale X2 signal to force in Newtons
         self.scale_Z2 = 1  # scale Z2 signal to force in Newtons
         self.A2_mean = 1  # X3/X2 mean
         self.fsamp = 5000
@@ -108,6 +109,31 @@ class GravityFramework:
 
         print('***************************************************')
         print('Z2-amplitude: ', '{:.2e}'.format(np.abs(m1_tmp.values[0])))
+        print('reduced chi2: ', m1_tmp.fval / (len(xx2) - 2))
+
+        return m1_tmp.values[0], m1_tmp.errors[0], m1_tmp
+
+    def get_y_amplitude(self, bdf, noise_rms, bandwidth=1, decimate=10, **fit_kwargs):
+        """
+        Fit and extract the Y2 amplitude of one harmonic from one particular file
+        :param decimate: decimate the data before fitting
+        :param bandwidth: bandpass bandwidth
+        :param noise_rms: noise std of Y2
+        :param bdf: bdf dataset to be used
+        :return: amplitude, error
+        """
+        bb = bdf
+        frequency = fit_kwargs['f']
+
+        xx2 = bb.response_at_freq2('y', frequency, bandwidth=bandwidth) * 50000
+        xx2 = xx2[5000:-5000:decimate]  # cut out the first and last second
+
+        m1_tmp = self.lc_i.find_mle_sin(xx2, fsamp=self.fsamp / decimate,
+                                        noise_rms=noise_rms,
+                                        plot=False, suppress_print=True, bimodal=False, **fit_kwargs)
+
+        print('***************************************************')
+        print('Y2-amplitude: ', '{:.2e}'.format(np.abs(m1_tmp.values[0])))
         print('reduced chi2: ', m1_tmp.fval / (len(xx2) - 2))
 
         return m1_tmp.values[0], m1_tmp.errors[0], m1_tmp
@@ -364,6 +390,33 @@ class GravityFramework:
         A_mean = np.mean([m1.values[0] for m1 in m1_tmp])
         self.scale_Z2 = A_mean / force
         print('Z2 response (amplitude):', A_mean)
+        self.m1_list = m1_tmp
+
+        return m1_tmp
+
+    def build_y_response(self, bdf_list, drive_freq, charges, bandwidth, decimate=10):
+        """
+        Calculates the Y response by fitting sine
+        :param decimate: decimate data for speedup
+        :param bandwidth: bandwidth for the bandpass filter
+        :param bdf_list: list of force calibration BeadDataFiles
+        :param drive_freq: the drive frequency on the electrodes
+        :param charges: charge state on the sphere
+        :return: m1_tmp, list of the minimizer
+        """
+        fit_kwargs = {'A': 10, 'f': drive_freq, 'phi': 0.0,
+                      'error_A': 1, 'error_f': 1, 'error_phi': 0.5, 'errordef': 1,
+                      'limit_phi': [-2 * np.pi, 2 * np.pi],
+                      'limit_A': [0, 100000],
+                      'print_level': 0, 'fix_f': True, 'fix_phi': False}
+
+        m1_tmp = [self.get_y_amplitude(bdf=bdf_, noise_rms=1, bandwidth=bandwidth, decimate=decimate,
+                                       **fit_kwargs)[2] for bdf_ in bdf_list]
+
+        force = charges * 1.6e-19 * 20 / 8e-3 * 0.61  # in Newtons
+        A_mean = np.mean([m1.values[0] for m1 in m1_tmp])
+        self.scale_Y2 = A_mean / force
+        print('Y2 response (amplitude):', A_mean)
         self.m1_list = m1_tmp
 
         return m1_tmp
