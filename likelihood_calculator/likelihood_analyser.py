@@ -145,7 +145,7 @@ class LikelihoodAnalyser:
         func_t = A * np.sin(2 * np.pi * f * self.data_x + phi)  # function to minimize
         res = sum(np.power(np.abs(self.data_y - func_t), 2))
         res /= sigma ** 2
-        res += 2 * len(self.data_x) * np.log(sigma)
+        res += 2 * np.log(sigma)
 
         return res
 
@@ -330,6 +330,21 @@ class LikelihoodAnalyser:
             PLarray.append(mimuit_minimizer.fval)
         return np.array(PLarray)
 
+    def get_PL_sin(self, A_array, **kwargs):
+        """
+        This function must be called after calling find_mle_sin, and uses the template and scales and data
+        in memory without redefining it.
+        :return: array of PL points
+        """
+        PLarray = []
+        kwargs['fix_A'] = True
+        for A_ in A_array:
+            kwargs['A'] = A_
+            mimuit_minimizer = Minuit(self.least_squares_sine2, **kwargs)
+            mimuit_minimizer.migrad(ncall=50000)
+            PLarray.append(mimuit_minimizer.fval)
+        return np.array(PLarray)
+
     def find_mle_template2(self, x2, template2, x3, template3, center_freq, bandwidth, decimate, **kwargs):
         """
         The function is fitting the data with a  template using iminuit.
@@ -354,7 +369,7 @@ class LikelihoodAnalyser:
 
         return mimuit_minimizer
 
-    def find_mle_sin(self, x, drive_freq=0, fsamp=5000, bandwidth=50, noise_rms=0, plot=False, suppress_print=True,
+    def find_mle_sin(self, x, drive_freq=0, fsamp=5000, bandwidth=50, noise_rms=0, decimate=0, plot=False, suppress_print=True,
                      bimodal=False, **kwargs):
         """
         The function is fitting the data with a sine template using iminuit.
@@ -376,14 +391,14 @@ class LikelihoodAnalyser:
             self.noise_sigma = noise_rms
 
         # apply a bandpass filter to data and store data in the correct place for the minimization
-        self.data_x = np.arange(0, len(x)) / fsamp
+        self.data_x = np.arange(0, len(x))[::decimate] / fsamp
         start = time.time()
         if drive_freq != 0:
             if not suppress_print:
                 print('Bandpass filter ON. Bandwidth: ', bandwidth, 'Hz')
             b, a = signal.butter(3, [2. * (drive_freq - bandwidth / 2.) / fsamp,
                                      2. * (drive_freq + bandwidth / 2.) / fsamp], btype='bandpass')
-            self.data_y = signal.filtfilt(b, a, x)
+            self.data_y = signal.filtfilt(b, a, x)[::decimate]
         else:
             self.data_y = x
         end = time.time()
