@@ -369,7 +369,7 @@ class LikelihoodAnalyser:
 
         return mimuit_minimizer
 
-    def find_mle_sin(self, x, drive_freq=0, fsamp=5000, bandwidth=50, noise_rms=0, decimate=0, plot=False, suppress_print=True,
+    def find_mle_sin(self, x, drive_freq=0, fsamp=5000, bandwidth=50, noise_rms=0, decimate=1, plot=False, suppress_print=True,
                      bimodal=False, **kwargs):
         """
         The function is fitting the data with a sine template using iminuit.
