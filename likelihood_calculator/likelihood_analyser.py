@@ -327,7 +327,7 @@ class LikelihoodAnalyser:
                                      2. * (center_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
             self.data_y.append(signal.filtfilt(b, a, x)[5000:-5000:decimate])
 
-        mimuit_minimizer = Minuit(self.least_squares_multi_harmonics, **kwargs)
+        mimuit_minimizer = Minuit(self.least_squares_multi_harmonics2, **kwargs)
         mimuit_minimizer.migrad(ncall=50000)
 
         return mimuit_minimizer
