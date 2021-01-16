@@ -164,9 +164,11 @@ class LikelihoodAnalyser:
         res = 0
         N = len(self.data_y[0])
         for A_, phi_, A2_, phi2_, f_, noise_, data_ in zip(self.harmoincs_amp, self.harmoincs_phases,
-                                                           self.harmoincs_amp2, self.harmoincs_phases2, self.harmoincs_freqs,
-                                               self.harmoincs_noise, self.data_y):
-            func_t = A * A_ * np.sin(2 * np.pi * f_ * self.data_x + phi_)  # function to minimize
+                                                           self.harmoincs_amp2, self.harmoincs_phases2,
+                                                           self.harmoincs_freqs,
+                                                           self.harmoincs_noise, self.data_y):
+            func_t = A * A_ * np.sin(2 * np.pi * f_ * self.data_x + phi_) + \
+                     A2 * A2_ * np.sin(2 * np.pi * f_ * self.data_x + phi2_)
             res += sum(np.power(np.abs(data_ - func_t), 2)) / noise_
 
         return res
@@ -354,8 +356,9 @@ class LikelihoodAnalyser:
 
         return mimuit_minimizer
 
-    def find_edm_multiHarmoincs2(self, x, amps1, phases1, amps2, phases2, scales, signal_freqs, bandwidth, noises, decimate=10,
-                                **kwargs):
+    def find_edm_multiHarmoincs2(self, x, amps1, phases1, amps2, phases2, scales, signal_freqs, bandwidth, noises,
+                                 decimate=10,
+                                 **kwargs):
         """
         The function is fitting the data with a template of the edm (3 axis)
         The fitting is for multiple harmonics simultaneously
