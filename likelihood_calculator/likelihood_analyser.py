@@ -152,7 +152,7 @@ class LikelihoodAnalyser:
 
         return res
 
-    def least_squares_multi_harmonics3(self, A, A2):
+    def least_squares_multi_harmonics3(self, A, A2, sigma):
         """
         least squares for minimization - sine function for multi datasets - not log likelihood
         This chi2 is used for finding MLE of gravity+EDM backgrounds
@@ -170,6 +170,9 @@ class LikelihoodAnalyser:
             func_t = A * A_ * np.sin(2 * np.pi * f_ * self.data_x + phi_) + \
                      A2 * A2_ * np.sin(2 * np.pi * f_ * self.data_x + phi2_)
             res += sum(np.power(np.abs(data_ - func_t), 2)) / noise_
+
+        res /= (sigma ** 2)
+        res += 2 * np.log(sigma) * len(self.harmoincs_amp)
 
         return res
 
