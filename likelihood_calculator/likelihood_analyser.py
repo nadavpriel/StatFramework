@@ -22,6 +22,9 @@ class LikelihoodAnalyser:
         self.harmoincs_freqs = None
         self.harmoincs_noise = None
 
+        self.harmoincs_amp2 = None
+        self.harmoincs_phases2 = None
+
     def log_likelihood_template(self, alpha, phase, sigma):
         """
         Log likelihood function, using template and control dataset to constrain the noise
@@ -143,6 +146,25 @@ class LikelihoodAnalyser:
         res = 0
         N = len(self.data_y[0])
         for A_, phi_, f_, noise_, data_ in zip(self.harmoincs_amp, self.harmoincs_phases, self.harmoincs_freqs,
+                                               self.harmoincs_noise, self.data_y):
+            func_t = A * A_ * np.sin(2 * np.pi * f_ * self.data_x + phi_)  # function to minimize
+            res += sum(np.power(np.abs(data_ - func_t), 2)) / noise_
+
+        return res
+
+    def least_squares_multi_harmonics3(self, A, A2):
+        """
+        least squares for minimization - sine function for multi datasets - not log likelihood
+        This chi2 is used for finding MLE of gravity+EDM backgrounds
+        :param A: Amplitudes of  edm
+        :param A2: Amplitudes of edm2
+        :return: cost function - sum of squares
+        """
+
+        res = 0
+        N = len(self.data_y[0])
+        for A_, phi_, A2_, phi2_, f_, noise_, data_ in zip(self.harmoincs_amp, self.harmoincs_phases,
+                                                           self.harmoincs_amp2, self.harmoincs_phases2, self.harmoincs_freqs,
                                                self.harmoincs_noise, self.data_y):
             func_t = A * A_ * np.sin(2 * np.pi * f_ * self.data_x + phi_)  # function to minimize
             res += sum(np.power(np.abs(data_ - func_t), 2)) / noise_
@@ -328,6 +350,47 @@ class LikelihoodAnalyser:
             self.data_y.append(signal.filtfilt(b, a, x)[5000:-5000:decimate])
 
         mimuit_minimizer = Minuit(self.least_squares_multi_harmonics2, **kwargs)
+        mimuit_minimizer.migrad(ncall=50000)
+
+        return mimuit_minimizer
+
+    def find_edm_multiHarmoincs2(self, x, amps1, phases1, amps2, phases2, scales, signal_freqs, bandwidth, noises, decimate=10,
+                                **kwargs):
+        """
+        The function is fitting the data with a template of the edm (3 axis)
+        The fitting is for multiple harmonics simultaneously
+        Phase response added
+        :param noises: list with the variance of each harmonic
+        :param scales: scale to convert to force units
+        :param decimate: decimate data (good for correlated datasets)
+        :param amps1: amplitudes of the edm model
+        :param phases1: phases of the edm model
+        :param bandwidth: bandwidth for butter filter [Hz]
+        :param signal_freqs: frequencies of the different harmonics
+        :param x: 1 dim. position data (time domain)
+        :return: minimizer result
+        """
+        # filtering the data at the required frequencies
+        # apply a bandpass filter to data and store data in the correct place for the minimization
+        self.data_x = np.arange(0, len(x)) / self.fsamp
+        self.data_x = self.data_x[5000:-5000:decimate]
+        self.harmoincs_freqs = signal_freqs
+        self.harmoincs_noise = noises
+
+        # set edm model parameters
+        self.harmoincs_phases = phases1
+        self.harmoincs_amp = np.array([amp_ * scale_ for amp_, scale_ in zip(amps1, scales)])
+        self.harmoincs_phases2 = phases2
+        self.harmoincs_amp2 = np.array([amp_ * scale_ for amp_, scale_ in zip(amps2, scales)])
+
+        # filter data
+        self.data_y = []
+        for center_freq in signal_freqs:
+            b, a = signal.butter(3, [2. * (center_freq - bandwidth / 2.) / self.fsamp,
+                                     2. * (center_freq + bandwidth / 2.) / self.fsamp], btype='bandpass')
+            self.data_y.append(signal.filtfilt(b, a, x)[5000:-5000:decimate])
+
+        mimuit_minimizer = Minuit(self.least_squares_multi_harmonics3, **kwargs)
         mimuit_minimizer.migrad(ncall=50000)
 
         return mimuit_minimizer
