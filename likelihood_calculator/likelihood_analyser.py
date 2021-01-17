@@ -26,6 +26,8 @@ class LikelihoodAnalyser:
         self.harmoincs_phases2 = None
         self.harmoincs_amp3 = None
         self.harmoincs_phases3 = None
+        self.harmoincs_amp4 = None
+        self.harmoincs_phases4 = None
 
     def log_likelihood_template(self, alpha, phase, sigma):
         """
@@ -154,7 +156,7 @@ class LikelihoodAnalyser:
 
         return res
 
-    def least_squares_multi_harmonics3(self, A, A2, A3, sigma):
+    def least_squares_multi_harmonics3(self, A, A2, A3, A4, sigma):
         """
         least squares for minimization - sine function for multi datasets - not log likelihood
         This chi2 is used for finding MLE of gravity+EDM backgrounds
@@ -165,14 +167,17 @@ class LikelihoodAnalyser:
 
         res = 0
         N = len(self.data_y[0])
-        for A_, phi_, A2_, phi2_, A3_, phi3_, f_, noise_, data_ in zip(self.harmoincs_amp, self.harmoincs_phases,
+        for A_, phi_, A2_, phi2_, A3_, phi3_, A4_, phi4_, f_, noise_, data_ in zip(self.harmoincs_amp, self.harmoincs_phases,
                                                                        self.harmoincs_amp2, self.harmoincs_phases2,
                                                                        self.harmoincs_amp3, self.harmoincs_phases3,
+                                                                       self.harmoincs_amp4, self.harmoincs_phases4,
                                                                        self.harmoincs_freqs,
                                                                        self.harmoincs_noise, self.data_y):
             func_t = A * A_ * np.sin(2 * np.pi * f_ * self.data_x + phi_) + \
                      A2 * A2_ * np.sin(2 * np.pi * f_ * self.data_x + phi2_) + \
-                     A3 * A3_ * np.sin(2 * np.pi * f_ * self.data_x + phi3_)
+                     A3 * A3_ * np.sin(2 * np.pi * f_ * self.data_x + phi3_) + \
+                     A4 * A4_ * np.sin(2 * np.pi * f_ * self.data_x + phi4_)
+
             res += sum(np.power(np.abs(data_ - func_t), 2)) / noise_
 
         res /= (sigma ** 2)
@@ -363,7 +368,7 @@ class LikelihoodAnalyser:
 
         return mimuit_minimizer
 
-    def find_edm_multiHarmoincs2(self, x, amps1, phases1, amps2, phases2, amps3, phases3, scales, signal_freqs,
+    def find_edm_multiHarmoincs2(self, x, amps1, phases1, amps2, phases2, amps3, phases3, amps4, phases4, scales, signal_freqs,
                                  bandwidth, noises, decimate=10, **kwargs):
         """
         The function is fitting the data with a template of the edm (3 axis)
@@ -393,6 +398,8 @@ class LikelihoodAnalyser:
         self.harmoincs_amp2 = np.array([amp_ * scale_ for amp_, scale_ in zip(amps2, scales)])
         self.harmoincs_phases3 = phases3
         self.harmoincs_amp3 = np.array([amp_ * scale_ for amp_, scale_ in zip(amps3, scales)])
+        self.harmoincs_phases4 = phases4
+        self.harmoincs_amp4 = np.array([amp_ * scale_ for amp_, scale_ in zip(amps4, scales)])
 
         # filter data
         self.data_y = []
