@@ -469,6 +469,21 @@ class LikelihoodAnalyser:
             PLarray.append(mimuit_minimizer.fval)
         return np.array(PLarray)
 
+    def get_PL_edm_multiHarmonics(self, A_array, **kwargs):
+        """
+        This function must be called after calling find_mle_multiHarmonics, and uses the template and scales and data
+        in memory without redefining it.
+        :return: array of PL points
+        """
+        PLarray = []
+        kwargs['fix_A4'] = True
+        for A_ in A_array:
+            kwargs['A4'] = A_
+            mimuit_minimizer = Minuit(self.least_squares_multi_harmonics3, **kwargs)
+            mimuit_minimizer.migrad(ncall=50000)
+            PLarray.append(mimuit_minimizer.fval)
+        return np.array(PLarray)
+
     def get_PL_sin(self, A_array, **kwargs):
         """
         This function must be called after calling find_mle_sin, and uses the template and scales and data
