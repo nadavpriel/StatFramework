@@ -482,6 +482,10 @@ class LikelihoodAnalyser:
             mimuit_minimizer = Minuit(self.least_squares_multi_harmonics3, **kwargs)
             mimuit_minimizer.migrad(ncall=50000)
             PLarray.append(mimuit_minimizer.fval)
+            kwargs['A'] = mimuit_minimizer.values[0]
+            kwargs['A2'] = mimuit_minimizer.values[1]
+            kwargs['A3'] = mimuit_minimizer.values[2]
+            kwargs['sigma'] = mimuit_minimizer.values[4]
         return np.array(PLarray)
 
     def get_PL_sin(self, A_array, **kwargs):
